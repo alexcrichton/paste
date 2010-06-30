@@ -1,0 +1,9 @@
+Description:
+    Generate the configuration files and layout for usage with sprockets
+
+Example:
+    rails generate sprockets
+
+    This will create:
+        app/javascripts
+        config/sprockets.yml
