@@ -22,12 +22,14 @@ Gem::Specification.new do |s|
      "README.md",
      "Rakefile",
      "VERSION",
+     "lib/sprockets-packager.rb",
      "lib/sprockets/rails.rb",
      "lib/sprockets/rails/helper.rb",
      "lib/sprockets/rails/rack.rb",
      "lib/sprockets/rails/railtie.rb",
      "lib/sprockets/rails/version.rb",
-     "lib/sprockets/rails/watcher.rb"
+     "lib/sprockets/rails/watcher.rb",
+     "sprockets-packager.gemspec"
   ]
   s.homepage = %q{http://github.com/alexcrichton/sprockets-packager}
   s.rdoc_options = ["--charset=UTF-8"]

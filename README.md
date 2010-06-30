@@ -5,7 +5,7 @@ This gem lets you make use of [Sprockets](http://github.com/sstephenson/sprocket
 
 ## Installing:
 
-In your Gemfile: `gem 'sprockets-packager', :git => 'git://github.com/alexcrichton/sprockets-packager.git'`
+In your Gemfile: `gem 'sprockets-packager'`
 
 
 ## Usage

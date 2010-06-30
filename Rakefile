@@ -18,3 +18,9 @@ rescue LoadError
   puts "Jeweler (or a dependency) not available. Install it with: gem install jeweler"
 end
 
+namespace :gem do
+  desc "push to gemcutter"
+  task :push => :build do
+    system "gem push pkg/sprockets-packager-#{Sprockets::Rails::Version::STRING}.gem"
+  end
+end
