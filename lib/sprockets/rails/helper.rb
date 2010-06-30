@@ -4,7 +4,9 @@ module Sprockets
       def sprockets_include_tag
         return if @sprockets.blank?
 
-        javascript_include_tag Sprockets::Rails.path_for_sources @sprockets
+        file = Sprockets::Rails.watcher.sprocketize @sprockets
+
+        javascript_include_tag file
       end
 
       def include_sprocket sprocket
