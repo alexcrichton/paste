@@ -16,17 +16,17 @@ Gem::Specification.new do |s|
     "README"
   ]
   s.files = [
-    "README",
+    ".gitignore",
+     "README",
      "Rakefile",
      "VERSION",
-     "lib/generators/sprockets/USAGE",
-     "lib/generators/sprockets/sprockets_generator.rb",
-     "lib/generators/sprockets/templates/sprockets.yml",
      "lib/sprockets-rails.rb",
      "lib/sprockets/rails.rb",
      "lib/sprockets/rails/helper.rb",
      "lib/sprockets/rails/rack.rb",
+     "lib/sprockets/rails/railtie.rb",
      "lib/sprockets/rails/version.rb",
+     "lib/sprockets/rails/watcher.rb",
      "sprockets-rails.gemspec"
   ]
   s.homepage = %q{http://github.com/alexcrichton/sprockets-rails}
