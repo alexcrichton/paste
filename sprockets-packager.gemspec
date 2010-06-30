@@ -4,46 +4,32 @@
 # -*- encoding: utf-8 -*-
 
 Gem::Specification.new do |s|
-  s.name = %q{sprockets-rails}
+  s.name = %q{sprockets-packager}
   s.version = "1.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Alex Crichton"]
   s.date = %q{2010-06-29}
-  s.description = %q{Sprockets for Rails 3}
+  s.description = %q{Sprocket Packaging for Rails 3}
   s.email = %q{alex@alexcrichton.com}
   s.extra_rdoc_files = [
-    "README"
+    "LICENSE",
+     "README.md"
   ]
   s.files = [
     ".gitignore",
-     "README",
+     "LICENSE",
+     "README.md",
      "Rakefile",
      "VERSION",
-     "lib/sprockets-rails.rb",
      "lib/sprockets/rails.rb",
      "lib/sprockets/rails/helper.rb",
      "lib/sprockets/rails/rack.rb",
      "lib/sprockets/rails/railtie.rb",
      "lib/sprockets/rails/version.rb",
-     "lib/sprockets/rails/watcher.rb",
-     "sprockets-rails.gemspec"
+     "lib/sprockets/rails/watcher.rb"
   ]
-  s.homepage = %q{http://github.com/alexcrichton/sprockets-rails}
-  s.post_install_message = %q{**************************************************
-
-  Thank you for installing sprockets-rails-1.0!
-
-  This version of sprockets-rails only works with 
-  versions of rails >= 3.0.0.pre.
-
-  Be sure to run the following command in each of your
-  Rails apps if you're installing:
-
-    script/rails generate sprockets
-
-**************************************************
-}
+  s.homepage = %q{http://github.com/alexcrichton/sprockets-packager}
   s.rdoc_options = ["--charset=UTF-8"]
   s.require_paths = ["lib"]
   s.rubygems_version = %q{1.3.7}
