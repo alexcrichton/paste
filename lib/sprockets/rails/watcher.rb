@@ -47,7 +47,7 @@ module Sprockets
             rescue Sprockets::LoadError => e
               @secretaries[path] = nil
               File.delete(path) if File.exists?(path)
-              next
+              raise e
             end
           end
 
