@@ -64,8 +64,9 @@ module Sprockets
         # Look for .js.erb file in each of the load paths and 
         # regenerate if necessary
         @options[:load_path].each do |path|
-          Dir[path + '/**/*.js.erb'].each do |erb_file|          
-            generated = erb_path.join File.basename(erb_file, '.erb')
+          Dir[path + '/**/*.js.erb'].each do |erb_file|
+            relative_path = erb_file.gsub(path + '/', '').gsub(/\.erb$/, '')
+            generated     = erb_path + relative_path
 
             FileUtils.mkdir_p File.dirname(generated)
 
