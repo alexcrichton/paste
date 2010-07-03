@@ -10,12 +10,14 @@ require 'sprockets/rails/watcher'
 module Sprockets
   module Rails
     class Railtie < ::Rails::Railtie
-
-      config.app_middleware.use Sprockets::Rails::Rack
+      
+      if ::Rails.env.development?
+        config.app_middleware.use Sprockets::Rails::Rack
+      end
 
       config.to_prepare do 
         ActionView::Base.send :include, Sprockets::Rails::Helper
-        
+
         Sprockets::Rails.watcher.prepare! if ::Rails.env.production?
       end
 

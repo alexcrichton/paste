@@ -2,8 +2,7 @@ module Sprockets
   module Rails
     
     def self.check_for_updates
-      watcher.prepare! unless ::Rails.env.production?
-
+      watcher.prepare!
       watcher.update_sprockets
     end
 

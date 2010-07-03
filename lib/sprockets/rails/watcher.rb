@@ -27,34 +27,49 @@ module Sprockets
             }.join("\n")
           end
         end
+        
+        sprocket_file = asset_location.join file
+        if !File.exists?(sprocket_file) || ::Rails.env.development?
+          update_sprocket file
+        end
 
         "/#{@options[:destination]}/#{file}"
       end
 
       def update_sprockets
-
         config = {:root => ::Rails.root}.merge(
                       @options.slice(:load_path, :asset_root))
         config[:load_path] << erb_path.to_s
 
         Dir[cache_dir.to_s + '/*.js'].each do |source|
-          config[:source_files] = [source]
-          path = asset_location.join(File.basename(source)).to_s
+          update_sprocket source, config
+        end
+      end
+      
+      def update_sprocket sprocket_or_file, config = nil
+        if config.nil?
+          config = {:root => ::Rails.root}.merge(
+                        @options.slice(:load_path, :asset_root))
+          config[:load_path] << erb_path.to_s
+        end
+  
+        sprocket              = File.basename(sprocket_or_file)  
+        path                  = asset_location.join(sprocket).to_s
+        config[:source_files] = [cache_dir.join(sprocket).to_s]
 
-          if @secretaries[path].nil?
-            begin
-              @secretaries[path] = Sprockets::Secretary.new config
-            rescue Sprockets::LoadError => e
-              @secretaries[path] = nil
-              File.delete(path) if File.exists?(path)
-              next
-            end
+        if @secretaries[path].nil?
+          begin
+            @secretaries[path] = Sprockets::Secretary.new config
+          rescue Sprockets::LoadError => e
+            @secretaries[path] = nil
+            File.delete(path) if File.exists?(path)
+            return
           end
+        end
 
-          changed? path, @secretaries[path].source_last_modified do
-            @secretaries[path].reset!
-            @secretaries[path].concatenation.save_to path
-          end
+        changed? path, @secretaries[path].source_last_modified do
+          @secretaries[path].reset!
+          @secretaries[path].concatenation.save_to path
         end
       end
       
