@@ -55,15 +55,19 @@ module Sprockets
   
         sprocket              = File.basename(sprocket_or_file)  
         path                  = asset_location.join(sprocket).to_s
-        config[:source_files] = [cache_dir.join(sprocket).to_s]
+        source                = cache_dir.join(sprocket).to_s
+        config[:source_files] = [source]
 
         if @secretaries[path].nil?
           begin
             @secretaries[path] = Sprockets::Secretary.new config
           rescue Sprockets::LoadError => e
             @secretaries[path] = nil
-            File.delete(path) if File.exists?(path)
-            raise e
+            File.delete(path)   if File.exists?(path)
+            File.delete(source) if File.exists?(source)
+            
+            ::Rails.logger.warn "WARNING: Sprockets Error: #{e}"
+            return
           end
         end
 
