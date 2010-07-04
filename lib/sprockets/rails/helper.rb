@@ -1,7 +1,8 @@
 module Sprockets
   module Rails
     module Helper
-      def sprockets_include_tag
+      def sprockets_include_tag *sprockets
+        (@sprockets ||= []) += sprockets
         return if @sprockets.blank?
 
         file = Sprockets::Rails.watcher.sprocketize @sprockets
