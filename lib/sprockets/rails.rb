@@ -8,10 +8,11 @@ module Sprockets
 
     def self.options
       @@configuration ||= {
-        :load_path   => ['app/javascripts'],
-        :asset_root  => 'public',
-        :destination => 'javascripts/sprockets',
-        :cache_dir   => 'tmp/sprockets-cache', 
+        :load_path     => ['app/javascripts'],
+        :asset_root    => 'public',
+        :destination   => 'javascripts/sprockets',
+        :cache_dir     => 'tmp/sprockets-cache',
+        :watch_changes => ::Rails.env.development?
       }
     end
     

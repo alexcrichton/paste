@@ -29,7 +29,7 @@ module Sprockets
         end
         
         sprocket_file = asset_location.join file
-        if !File.exists?(sprocket_file) || ::Rails.env.development?
+        if !File.exists?(sprocket_file) || Rails.options[:watch_changes]
           update_sprocket file
         end
 
