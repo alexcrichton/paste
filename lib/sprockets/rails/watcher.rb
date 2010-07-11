@@ -91,11 +91,26 @@ module Sprockets
             FileUtils.mkdir_p File.dirname(generated)
 
             changed? generated, File.mtime(erb_file) do
-              File.open(generated, 'w') do |f|
-                f << ERB.new(File.read(erb_file)).result
-              end
+              contents = ERBHelper.new(File.read(erb_file)).result
+              File.open(generated, 'w') { |f| f << contents }
             end
           end
+        end
+      end
+      
+      class ERBHelper < ERB
+        include ActionView::Helpers
+
+        def config
+          ::Rails.application.config.action_controller
+        end
+        
+        def result *args
+          super binding
+        end
+      
+        def controller
+          nil
         end
       end
       
@@ -115,7 +130,7 @@ module Sprockets
         ::Rails.root.join @options[:asset_root], 
                           @options[:destination]
       end
-
+      
       def erb_path
         cache_dir.join('erb')
       end
