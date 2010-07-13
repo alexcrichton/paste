@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{sprockets-packager}
-  s.version = "1.0.6"
+  s.version = "1.0.7"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Alex Crichton"]
-  s.date = %q{2010-07-11}
+  s.date = %q{2010-07-12}
   s.description = %q{Sprocket Packaging for Rails 3}
   s.email = %q{alex@alexcrichton.com}
   s.extra_rdoc_files = [
@@ -23,19 +23,19 @@ Gem::Specification.new do |s|
      "Rakefile",
      "VERSION",
      "lib/sprockets-packager.rb",
-     "lib/sprockets/rails.rb",
-     "lib/sprockets/rails/helper.rb",
-     "lib/sprockets/rails/rack.rb",
-     "lib/sprockets/rails/railtie.rb",
-     "lib/sprockets/rails/version.rb",
-     "lib/sprockets/rails/watcher.rb",
+     "lib/sprockets/packager.rb",
+     "lib/sprockets/packager/helper.rb",
+     "lib/sprockets/packager/rack.rb",
+     "lib/sprockets/packager/railtie.rb",
+     "lib/sprockets/packager/version.rb",
+     "lib/sprockets/packager/watcher.rb",
      "sprockets-packager.gemspec"
   ]
   s.homepage = %q{http://github.com/alexcrichton/sprockets-packager}
   s.rdoc_options = ["--charset=UTF-8"]
   s.require_paths = ["lib"]
   s.rubygems_version = %q{1.3.7}
-  s.summary = %q{sprockets-rails-1.0.6}
+  s.summary = %q{sprockets-rails-1.0.7}
 
   if s.respond_to? :specification_version then
     current_version = Gem::Specification::CURRENT_SPECIFICATION_VERSION
