@@ -1,5 +1,5 @@
 module Sprockets
-  module Rails
+  module Packager
     class Rack
 
       def initialize app
@@ -7,7 +7,7 @@ module Sprockets
       end
       
       def call env
-        Sprockets::Rails.check_for_updates
+        Sprockets::Packager.check_for_updates
         @app.call env
       end
 

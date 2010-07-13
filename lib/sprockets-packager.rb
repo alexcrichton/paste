@@ -1,1 +1,1 @@
-require 'sprockets/rails/railtie'
+require 'sprockets/packager/railtie'

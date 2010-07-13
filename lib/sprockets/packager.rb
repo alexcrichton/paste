@@ -1,5 +1,5 @@
 module Sprockets
-  module Rails
+  module Packager
     
     def self.check_for_updates
       watcher.prepare!
@@ -12,7 +12,7 @@ module Sprockets
         :asset_root    => 'public',
         :destination   => 'javascripts/sprockets',
         :cache_dir     => 'tmp/sprockets-cache',
-        :watch_changes => ::Rails.env.development?
+        :watch_changes => Rails.env.development?
       }
     end
     

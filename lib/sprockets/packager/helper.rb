@@ -1,5 +1,5 @@
 module Sprockets
-  module Rails
+  module Packager
     module Helper
       def sprockets_include_tag *sprockets
         include_sprockets *sprockets
@@ -9,7 +9,7 @@ module Sprockets
         
         return if @sprockets.blank?
 
-        file = Sprockets::Rails.watcher.sprocketize @sprockets
+        file = Sprockets::Packager.watcher.sprocketize @sprockets
 
         javascript_include_tag file
       end

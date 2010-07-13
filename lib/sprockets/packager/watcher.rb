@@ -1,8 +1,8 @@
 module Sprockets
-  module Rails
+  module Packager
     class Watcher
       
-      def initialize options = Sprockets::Rails.options
+      def initialize options = Sprockets::Packager.options
         @options     = options
         @secretaries = {}
       end
@@ -18,7 +18,7 @@ module Sprockets
         to_hash = sprockets.sort.join
         file    = Digest::SHA1.hexdigest(to_hash)[0..8] + '.js'
 
-        cache_dir = ::Rails.root.join(@options[:cache_dir])
+        cache_dir = Rails.root.join(@options[:cache_dir])
 
         if !File.exists? cache_dir.join(file)
           File.open(cache_dir.join(file), 'w') do |f|
@@ -29,7 +29,7 @@ module Sprockets
         end
         
         sprocket_file = asset_location.join file
-        if !File.exists?(sprocket_file) || Rails.options[:watch_changes]
+        if !File.exists?(sprocket_file) || Packager.options[:watch_changes]
           update_sprocket file
         end
 
@@ -37,7 +37,7 @@ module Sprockets
       end
 
       def update_sprockets
-        config = {:root => ::Rails.root}.merge(
+        config = {:root => Rails.root}.merge(
                       @options.slice(:load_path, :asset_root))
         config[:load_path] << erb_path.to_s
 
@@ -48,7 +48,7 @@ module Sprockets
       
       def update_sprocket sprocket_or_file, config = nil
         if config.nil?
-          config = {:root => ::Rails.root}.merge(
+          config = {:root => Rails.root}.merge(
                         @options.slice(:load_path, :asset_root))
           config[:load_path] << erb_path.to_s
         end
@@ -66,7 +66,7 @@ module Sprockets
             File.delete(path)   if File.exists?(path)
             File.delete(source) if File.exists?(source)
             
-            ::Rails.logger.warn "WARNING: Sprockets Error: #{e}"
+            Rails.logger.warn "WARNING: Sprockets Error: #{e}"
             return
           end
         end
@@ -102,7 +102,7 @@ module Sprockets
         include ActionView::Helpers
 
         def config
-          ::Rails.application.config.action_controller
+          Rails.application.config.action_controller
         end
         
         def result *args
@@ -127,8 +127,8 @@ module Sprockets
       end
 
       def asset_location
-        ::Rails.root.join @options[:asset_root], 
-                          @options[:destination]
+        Rails.root.join @options[:asset_root], 
+                        @options[:destination]
       end
       
       def erb_path
@@ -136,7 +136,7 @@ module Sprockets
       end
 
       def cache_dir
-        ::Rails.root.join @options[:cache_dir]
+        Rails.root.join @options[:cache_dir]
       end
       
     end
