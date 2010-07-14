@@ -2,9 +2,21 @@ module Sprockets
   module Packager
     class Watcher
       
-      def initialize options = Sprockets::Packager.options
-        @options     = options
-        @secretaries = {}
+      attr_accessor :cache_dir, :erb_path, :asset_location
+      
+      def initialize options = {}
+        @options            = Sprockets::Packager.options.merge(options)
+        @secretaries        = {}
+        self.cache_dir      = Rails.root.join @options[:cache_dir]
+        self.erb_path       = cache_dir.join('erb')
+        self.asset_location = Rails.root.join @options[:asset_root], 
+                                              @options[:javascript_dir]                                              
+
+        @options[:load_path] += [erb_path.to_s, cache_dir.to_s]
+        @options[:default_config] = {
+            :root         => Rails.root, 
+            :expand_paths => false
+          }.merge(@options.slice(:load_path, :asset_root))
       end
 
       def prepare!
@@ -13,72 +25,88 @@ module Sprockets
       end
 
       def sprocketize sprockets
-        return if sprockets.blank?
+        return [] if sprockets.blank?
 
-        to_hash = sprockets.sort.join
-        file    = Digest::SHA1.hexdigest(to_hash)[0..8] + '.js'
+        if @options[:expand_includes]
+          expand sprockets
+        else
+          compact sprockets
+        end
+      end
 
-        cache_dir = Rails.root.join(@options[:cache_dir])
+      def update_sprockets
+        Dir[cache_dir.to_s + '/**/*.js'].each do |source|
+          update_sprocket source
+        end
+      end
 
-        if !File.exists? cache_dir.join(file)
-          File.open(cache_dir.join(file), 'w') do |f|
-            f << sprockets.map { |s| 
-              "//= require <#{s}>"
-            }.join("\n")
+      def update_sprocket sprocket
+        path      = asset_location.join(sprocket).to_s
+        secretary = get_secretary sprocket
+
+        changed? path, secretary.source_last_modified do
+          secretary.reset!
+          secretary.concatenation.save_to path
+        end
+      end
+
+      protected
+      
+      def expand sprockets
+        secretary    = get_secretary get_file_name(sprockets)
+        source_files = secretary.concatenation.source_lines.map(&:source_file)
+        source_files = source_files.uniq.map(&:pathname).map(&:to_s)
+
+        source_sprockets 
+
+        source_files.each do |file|
+          path = asset_location.join(file)
+          changed? path, File.mtime(file) do
+            FileUtils.mkdir_p path
+            FileUtils.cp file, path
           end
         end
         
+        source_files.map{ |s| s.gsub asset_location.to_s, '' }
+      end
+      
+      def compact sprockets
+        file = get_file_name sprockets
+
+        if Packager.options[:watch_changes]
+          write_temp_sprocket_file file, sprockets
+        end
+
         sprocket_file = asset_location.join file
+
         if !File.exists?(sprocket_file) || Packager.options[:watch_changes]
           update_sprocket file
         end
 
-        "/#{@options[:destination]}/#{file}"
-      end
-
-      def update_sprockets
-        config = {:root => Rails.root}.merge(
-                      @options.slice(:load_path, :asset_root))
-        config[:load_path] << erb_path.to_s
-
-        Dir[cache_dir.to_s + '/*.js'].each do |source|
-          update_sprocket source, config
-        end
+        ["/#{@options[:javascript_dir]}/#{dep}"]
       end
       
-      def update_sprocket sprocket_or_file, config = nil
-        if config.nil?
-          config = {:root => Rails.root}.merge(
-                        @options.slice(:load_path, :asset_root))
-          config[:load_path] << erb_path.to_s
-        end
-  
-        sprocket              = File.basename(sprocket_or_file)  
-        path                  = asset_location.join(sprocket).to_s
-        source                = cache_dir.join(sprocket).to_s
-        config[:source_files] = [source]
-
-        if @secretaries[path].nil?
+      def get_secretary sprocket
+        if @secretaries[sprocket].nil?
           begin
-            @secretaries[path] = Sprockets::Secretary.new config
+            config = @options[:default_config]
+            @environment = Sprockets::Environment.new config[:root],
+                                                      config[:load_path]
+            config[:source_files]  = [@environment.find(sprocket).to_s]
+            @secretaries[sprocket] = Sprockets::Secretary.new config
           rescue Sprockets::LoadError => e
-            @secretaries[path] = nil
+            @secretaries[sprocket] = nil
+            path = asset_location.join sprocket
             File.delete(path)   if File.exists?(path)
-            File.delete(source) if File.exists?(source)
-            
+
             Rails.logger.warn "WARNING: Sprockets Error: #{e}"
             return
           end
         end
 
-        changed? path, @secretaries[path].source_last_modified do
-          @secretaries[path].reset!
-          @secretaries[path].concatenation.save_to path
-        end
+        @secretaries[sprocket]
       end
-      
-      protected
-      
+
       def render_erb
         # Look for .js.erb file in each of the load paths and 
         # regenerate if necessary
@@ -97,23 +125,7 @@ module Sprockets
           end
         end
       end
-      
-      class ERBHelper < ERB
-        include ActionView::Helpers
 
-        def config
-          Rails.application.config.action_controller
-        end
-        
-        def result *args
-          super binding
-        end
-      
-        def controller
-          nil
-        end
-      end
-      
       def create_directories
         FileUtils.mkdir_p cache_dir
         FileUtils.mkdir_p asset_location
@@ -126,19 +138,19 @@ module Sprockets
         end
       end
 
-      def asset_location
-        Rails.root.join @options[:asset_root], 
-                        @options[:destination]
+      def get_file_name sprockets
+        Digest::SHA1.hexdigest(sprockets.sort.join)[0..8] + '.js'
       end
       
-      def erb_path
-        cache_dir.join('erb')
-      end
+      def write_temp_sprocket_file file, sprockets
+        return if File.exists? cache_dir.join(file)
 
-      def cache_dir
-        Rails.root.join @options[:cache_dir]
+        File.open(cache_dir.join(file), 'w') do |f|
+          f << sprockets.map { |s| 
+            "//= require <#{s}>"
+          }.join("\n")
+        end
       end
-      
     end
   end
 end

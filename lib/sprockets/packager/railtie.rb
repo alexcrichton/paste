@@ -6,6 +6,7 @@ require 'sprockets/packager'
 require 'sprockets/packager/rack'
 require 'sprockets/packager/helper'
 require 'sprockets/packager/watcher'
+require 'sprockets/packager/erb_helper'
 
 module Sprockets
   module Packager
@@ -17,7 +18,7 @@ module Sprockets
 
       config.to_prepare do 
         ActionView::Base.send :include, Sprockets::Packager::Helper
-        
+
         Sprockets::Packager.watcher.prepare!
       end
 

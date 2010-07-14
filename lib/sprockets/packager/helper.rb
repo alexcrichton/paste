@@ -9,9 +9,9 @@ module Sprockets
         
         return if @sprockets.blank?
 
-        file = Sprockets::Packager.watcher.sprocketize @sprockets
+        files = Sprockets::Packager.watcher.sprocketize @sprockets
 
-        javascript_include_tag file
+        javascript_include_tag *files
       end
 
       def include_sprockets *sprockets
