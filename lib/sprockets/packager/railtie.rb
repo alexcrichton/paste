@@ -3,7 +3,9 @@ module Sprockets
     class Railtie < Rails::Railtie
       
       if Rails.env.development?
-        config.app_middleware.use Sprockets::Packager::Rack
+        require 'sprockets/packager/rack_updater'
+
+        config.app_middleware.use Sprockets::Packager::RackUpdater
       end
 
       config.to_prepare do 

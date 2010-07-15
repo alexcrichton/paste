@@ -2,8 +2,8 @@ module Sprockets
   module Packager
     class Watcher
       
-      attr_reader :tmp_path, :erb_path, :destination, :secretary_config
-      attr_accessor :watch_changes
+      attr_reader :tmp_path, :erb_path, :secretary_config
+      attr_accessor :watch_changes, :destination
       
       def initialize options = {}
         @options            = Sprockets::Packager.options.merge(options)

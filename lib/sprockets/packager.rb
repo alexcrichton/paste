@@ -5,7 +5,6 @@ require 'digest/sha1'
 
 require 'sprockets'
 require 'sprockets/packager'
-require 'sprockets/packager/rack'
 require 'sprockets/packager/helper'
 require 'sprockets/packager/watcher'
 require 'sprockets/packager/erb_helper'

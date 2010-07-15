@@ -1,6 +1,6 @@
 module Sprockets
   module Packager
-    class Rack
+    class RackUpdater
 
       def initialize app
         @app = app
