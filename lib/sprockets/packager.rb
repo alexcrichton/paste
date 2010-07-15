@@ -1,14 +1,26 @@
+require 'fileutils'
+require 'pathname'
+require 'erb'
+require 'digest/sha1'
+
+require 'sprockets'
+require 'sprockets/packager'
+require 'sprockets/packager/rack'
+require 'sprockets/packager/helper'
+require 'sprockets/packager/watcher'
+require 'sprockets/packager/erb_helper'
+
 module Sprockets
   module Packager
 
     def self.options
       @@configuration ||= {
         :load_path       => ['app/javascripts'],
-        :asset_root      => 'public',
-        :javascript_dir  => 'javascripts',
+        :destination     => 'public/javascripts',
+        :root            => defined?(Rails) ? Rails.root : ::Pathname.new('.'),
         :cache_dir       => 'tmp/sprockets-cache',
-        :watch_changes   => Rails.env.development?,
-        :expand_includes => Rails.env.development?
+        :watch_changes   => defined?(Rails) && Rails.env.development?,
+        :expand_includes => defined?(Rails) && Rails.env.development?
       }
     end
 
