@@ -9,6 +9,7 @@ module Sprockets
       def call env
         Sprockets::Packager.watcher.prepare!
         Sprockets::Packager.watcher.update_sprockets
+
         @app.call env
       end
 

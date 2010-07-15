@@ -2,7 +2,7 @@ module Sprockets
   module Packager
     class Railtie < Rails::Railtie
       
-      if Sprockets::Packager.options[:watch_changes]
+      if Sprockets::Packager.watcher.watch_changes
         config.app_middleware.use Sprockets::Packager::Rack
       end
 

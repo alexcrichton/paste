@@ -7,7 +7,7 @@ begin
   Jeweler::Tasks.new do |gem|
     gem.name = "sprockets-packager"
     gem.version = Sprockets::Packager::Version::STRING
-    gem.summary = "sprockets-rails-#{Sprockets::Packager::Version::STRING}"
+    gem.summary = "sprockets-packager-#{Sprockets::Packager::Version::STRING}"
     gem.description = "Sprocket Packaging for Rails 3"
     gem.email = "alex@alexcrichton.com"
     gem.homepage = "http://github.com/alexcrichton/sprockets-packager"

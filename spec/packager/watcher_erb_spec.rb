@@ -42,4 +42,32 @@ describe Sprockets::Packager::Watcher do
     rendered = @watcher.erb_path.join 'foo.js'
     File.exists?(rendered).should be_false
   end
+  
+  describe "modifying existing files" do
+    before :each do
+      @generated = @watcher.erb_path.join('foo.js')
+      FileUtils.mkdir_p File.dirname(@generated)
+      File.open(@generated, 'w') { |f| f << 'foo' }
+    end
+    
+    it "should regenerate the file if the source was modified" do
+      File.open(@source_file, 'w') { |f| f << 'foobar' }
+      # Make this file be modified after the generated file
+      File.utime(Time.now, Time.now + 42, @source_file)
+
+      @watcher.render_erb
+
+      File.read(@generated).should == 'foobar'
+    end
+    
+    it "should not regenerate the file if the source was not modified" do
+      File.open(@source_file, 'w') { |f| f << 'foobar' }
+      # Make this file be modified before the generated file
+      File.utime(Time.now, Time.now - 42, @source_file)
+
+      @watcher.render_erb
+
+      File.read(@generated).should == 'foo'
+    end
+  end
 end
