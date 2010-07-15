@@ -20,7 +20,7 @@ module Sprockets
         @options[:load_path] << erb_path.to_s
         @secretary_config = {
             :root         => @options[:root], 
-            :expand_paths => true,
+            :expand_paths => false,
             :load_path    => @options[:load_path]
         }
       end
@@ -55,7 +55,6 @@ module Sprockets
 
         if changed? path, secretary.source_last_modified
           FileUtils.mkdir_p destination unless File.directory?(destination)
-
           secretary.reset!
           secretary.concatenation.save_to path
         end
@@ -107,7 +106,6 @@ module Sprockets
       def compact sprockets
         sprocket      = compact_sprocket_name sprockets
         sprocket_file = destination.join sprocket
-        
         register_secretary sprocket, sprockets if @secretaries[sprocket].nil?
 
         if !File.exists?(sprocket_file) || watch_changes
@@ -121,9 +119,10 @@ module Sprockets
         config = secretary_config.dup
         environment = Sprockets::Environment.new config[:root],
                                                  config[:load_path]
-        config[:source_files] = source_sprockets.map do |sprocket|
-          sprocket += '.js' unless sprocket.end_with? '.js'
-          environment.find(sprocket).to_s
+
+        config[:source_files] = source_sprockets.map do |source_sprocket|
+          source_sprocket += '.js' unless source_sprocket.end_with? '.js'
+          environment.find(source_sprocket).to_s
         end
 
         @secretaries[sprocket] = Sprockets::Secretary.new config

@@ -112,7 +112,6 @@ describe Sprockets::Packager::Watcher do
     
     @watcher.render_erb
     sprocket = @watcher.sprocketize('foobar', 'foo')[0]
-
     File.read(@watcher.destination.join(sprocket)).chomp.should == "25\nfoo()"
   end
 end
