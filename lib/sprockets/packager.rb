@@ -19,12 +19,17 @@ module Sprockets
         :root            => ::Pathname.new('.'),
         :tmp_path        => 'tmp/sprockets-cache',
         :watch_changes   => false,
-        :expand_includes => false
+        :expand_includes => false,
+        :serve_assets    => false
       }
     end
 
     def self.watcher
       @@watcher ||= Watcher.new options
+    end
+    
+    def self.reset!
+      @@watcher = nil
     end
 
   end

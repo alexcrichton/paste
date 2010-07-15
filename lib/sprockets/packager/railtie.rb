@@ -2,23 +2,34 @@ module Sprockets
   module Packager
     class Railtie < Rails::Railtie
       
-      if Rails.env.development?
-        require 'sprockets/packager/rack_updater'
+      initializer 'sprockets_packager.' do
+        Sprockets::Packager.options.merge!(
+          :watch_changes   => Rails.env.development?,
+          :expand_includes => Rails.env.development?,
+          :root            => Rails.root
+        )
 
-        config.app_middleware.use Sprockets::Packager::RackUpdater
-      end
-
-      config.to_prepare do 
         ActionView::Base.send :include, Sprockets::Packager::Helper
 
-        Sprockets::Packager.options.merge!(
-          :root            => Rails.root,
-          :watch_changes   => Rails.env.development?,
-          :expand_includes => Rails.env.development?
-        )
         Sprockets::Packager.watcher.prepare!
-      end
+        
+        if Sprockets::Packager.options[:watch_changes]
+          require 'sprockets/packager/rack_updater'
+          config.app_middleware.use Sprockets::Packager::RackUpdater
+        end
 
+        if Sprockets::Packager.options[:serve_assets]
+          require 'sprockets/packager/asset_server'
+          Sprockets::Packager.options[:destination] = Sprockets::Packager.options[:tmp_path] + '/javascripts'
+          Sprockets::Packager.reset!
+
+          # We want this serving to be at the very front
+          config.app_middleware.insert_before ActionDispatch::Static, 
+              ::Rack::Static, 
+              :urls => ['/javascripts'], 
+              :root => Sprockets::Packager.watcher.tmp_path
+        end
+      end
     end
   end
 end
