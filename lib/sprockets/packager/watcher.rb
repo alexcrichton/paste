@@ -18,16 +18,23 @@ module Sprockets
         @watch_changes  = @options[:watch_changes]
 
         @options[:load_path] << erb_path.to_s
+        @options[:load_path] = @options[:load_path].map do |path|
+          path = @options[:root].join(path).to_s if !File.directory?(path)
+          path = ::Pathname.new(path)
+          path.mkpath
+          path.realpath
+        end
+
         @secretary_config = {
-            :root         => @options[:root], 
+            :root         => @options[:root].to_s, 
             :expand_paths => false,
-            :load_path    => @options[:load_path]
+            :load_path    => @options[:load_path].map(&:to_s)
         }
       end
 
       def prepare!
-        FileUtils.mkdir_p destination
-        FileUtils.mkdir_p erb_path
+        destination.mkpath
+        erb_path.mkpath
         render_erb
       end
 
@@ -49,12 +56,12 @@ module Sprockets
       end
 
       def update_sprocket sprocket
-        path      = destination.join(sprocket).to_s
+        path      = destination.join(sprocket)
         secretary = @secretaries[sprocket]
         return false if secretary.nil?
 
         if changed? path, secretary.source_last_modified
-          FileUtils.mkdir_p destination unless File.directory?(destination)
+          path.dirname.mkpath
           secretary.reset!
           secretary.concatenation.save_to path
         end
@@ -64,16 +71,14 @@ module Sprockets
         # Look for .js.erb file in each of the load paths and 
         # regenerate if necessary
         @options[:load_path].each do |path|
-          Dir[path + '/**/*.js.erb'].each do |erb_file|
-            relative_path = erb_file.gsub(path + '/', '').
-                                     gsub(/\.erb$/, '')
-            generated     = erb_path + relative_path
+          ::Pathname.glob(path.join '**/*.js.erb').each do |erb|
+            relative  = erb.relative_path_from(path).sub(/\.erb$/, '')
+            generated = erb_path.join relative
+            generated.dirname.mkpath
 
-            FileUtils.mkdir_p File.dirname(generated)
-
-            if changed? generated, File.mtime(erb_file)
-              contents = ERBHelper.new(File.read(erb_file)).result
-              File.open(generated, 'w') { |f| f << contents }
+            if changed? generated, erb.mtime
+              contents = ERBHelper.new(erb.read).result
+              generated.open('w') { |f| f << contents }
             end
           end
         end
@@ -90,13 +95,15 @@ module Sprockets
         
         # Now take that list and copy the right file over
         source_files.map do |file|
-          prefix   = @options[:load_path].detect{ |path| file.start_with? path }
-          sprocket = file.gsub prefix + '/', ''
+          prefix   = @options[:load_path].detect{ |path| 
+            file.start_with? path.to_s
+          }
+          sprocket = file.gsub prefix.to_s + '/', ''
           path     = destination.join(sprocket)
 
           if changed? path, File.mtime(file)
-            FileUtils.mkdir_p File.dirname(path)
-            FileUtils.cp file, path
+            path.dirname.mkpath
+            FileUtils.cp file, path.to_s
           end
 
           sprocket
@@ -108,7 +115,7 @@ module Sprockets
         sprocket_file = destination.join sprocket
         register_secretary sprocket, sprockets if @secretaries[sprocket].nil?
 
-        if !File.exists?(sprocket_file) || watch_changes
+        if !sprocket_file.exist? || watch_changes
           update_sprocket sprocket
         end
 
@@ -128,8 +135,8 @@ module Sprockets
         @secretaries[sprocket] = Sprockets::Secretary.new config
       end
 
-      def changed? file, last_mod_time
-        !File.exists?(file) || File.mtime(file) < last_mod_time
+      def changed? path, last_mod_time
+        !path.exist? || path.mtime < last_mod_time
       end
 
       def compact_sprocket_name sprockets

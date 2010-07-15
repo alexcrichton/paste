@@ -17,10 +17,10 @@ module Sprockets
       @@configuration ||= {
         :load_path       => ['app/javascripts'],
         :destination     => 'public/javascripts',
-        :root            => defined?(Rails) ? Rails.root : ::Pathname.new('.'),
-        :cache_dir       => 'tmp/sprockets-cache',
-        :watch_changes   => defined?(Rails) && Rails.env.development?,
-        :expand_includes => defined?(Rails) && Rails.env.development?
+        :root            => ::Pathname.new('.'),
+        :tmp_path        => 'tmp/sprockets-cache',
+        :watch_changes   => false,
+        :expand_includes => false
       }
     end
 

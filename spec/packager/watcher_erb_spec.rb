@@ -8,9 +8,8 @@ describe Sprockets::Packager::Watcher do
   
   it "should render an erb file into a temporary location" do
     File.open(@source_file, 'w'){ |f| f << '' }
-    
+
     @watcher.render_erb
-    
     rendered = @watcher.erb_path.join 'foo.js'
     File.exists?(rendered).should be_true
   end
@@ -35,7 +34,7 @@ describe Sprockets::Packager::Watcher do
   end
   
   it "shouldn't try to render regular js files" do
-    @source_file.gsub! /\.erb$/, ''
+    @source_file = @source_file.sub /\.erb$/, ''
     
     @watcher.render_erb
 
@@ -56,7 +55,6 @@ describe Sprockets::Packager::Watcher do
       File.utime(Time.now, Time.now + 42, @source_file)
 
       @watcher.render_erb
-
       File.read(@generated).should == 'foobar'
     end
     
