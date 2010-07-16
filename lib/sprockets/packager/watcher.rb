@@ -71,7 +71,7 @@ module Sprockets
         # Look for .js.erb file in each of the load paths and 
         # regenerate if necessary
         @options[:load_path].each do |path|
-          ::Pathname.glob(path.join '**/*.js.erb').each do |erb|
+          ::Pathname.glob(path.to_s + '/**/*.js.erb').each do |erb|
             relative  = erb.relative_path_from(path).sub(/\.erb$/, '')
             generated = erb_path.join relative
             generated.dirname.mkpath
@@ -89,7 +89,11 @@ module Sprockets
       def expand sprockets
         # Grab a secretary to generate dependency list for us
         name         = compact_sprocket_name(sprockets)
-        secretary    = @secretaries[name] || register_secretary(name, sprockets)
+        if watch_changes
+          secretary = register_secretary(name, sprockets)
+        else
+          secretary = @secretaries[name] || register_secretary(name, sprockets)
+        end
         source_files = secretary.concatenation.source_lines.map(&:source_file)
         source_files = source_files.uniq.map{ |f| f.pathname.to_s }
         
