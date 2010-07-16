@@ -24,7 +24,7 @@ module Sprockets
           Sprockets::Packager.reset!
 
           # We want this serving to be at the very front
-          config.app_middleware.insert_before ActionDispatch::Static, 
+          config.app_middleware.insert_before Rack::Lock,
               ::Rack::Static, 
               :urls => ['/javascripts'], 
               :root => Sprockets::Packager.watcher.tmp_path
