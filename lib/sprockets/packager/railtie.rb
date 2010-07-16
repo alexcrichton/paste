@@ -11,8 +11,6 @@ module Sprockets
 
         ActionView::Base.send :include, Sprockets::Packager::Helper
 
-        Sprockets::Packager.watcher.prepare!
-        
         if Sprockets::Packager.options[:watch_changes]
           require 'sprockets/packager/rack_updater'
           config.app_middleware.use Sprockets::Packager::RackUpdater
@@ -28,6 +26,8 @@ module Sprockets
               :urls => ['/javascripts'], 
               :root => Sprockets::Packager.watcher.tmp_path
         end
+
+        Sprockets::Packager.watcher.prepare!
       end
     end
   end
