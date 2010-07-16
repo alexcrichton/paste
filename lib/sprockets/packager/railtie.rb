@@ -11,15 +11,12 @@ module Sprockets
 
         ActionView::Base.send :include, Sprockets::Packager::Helper
 
-        Sprockets::Packager.watcher.prepare!
-        
         if Sprockets::Packager.options[:watch_changes]
           require 'sprockets/packager/rack_updater'
           config.app_middleware.use Sprockets::Packager::RackUpdater
         end
 
         if Sprockets::Packager.options[:serve_assets]
-          require 'sprockets/packager/asset_server'
           Sprockets::Packager.options[:destination] = Sprockets::Packager.options[:tmp_path] + '/javascripts'
           Sprockets::Packager.reset!
 
@@ -29,6 +26,8 @@ module Sprockets
               :urls => ['/javascripts'], 
               :root => Sprockets::Packager.watcher.tmp_path
         end
+
+        Sprockets::Packager.watcher.prepare!
       end
     end
   end
