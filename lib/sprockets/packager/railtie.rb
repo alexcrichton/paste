@@ -19,7 +19,6 @@ module Sprockets
         end
 
         if Sprockets::Packager.options[:serve_assets]
-          require 'sprockets/packager/asset_server'
           Sprockets::Packager.options[:destination] = Sprockets::Packager.options[:tmp_path] + '/javascripts'
           Sprockets::Packager.reset!
 
