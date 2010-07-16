@@ -5,7 +5,7 @@
 
 Gem::Specification.new do |s|
   s.name = %q{sprockets-packager}
-  s.version = "1.0.8"
+  s.version = "1.0.9"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Alex Crichton"]
@@ -26,7 +26,7 @@ Gem::Specification.new do |s|
      "lib/sprockets/packager.rb",
      "lib/sprockets/packager/erb_helper.rb",
      "lib/sprockets/packager/helper.rb",
-     "lib/sprockets/packager/rack.rb",
+     "lib/sprockets/packager/rack_updater.rb",
      "lib/sprockets/packager/railtie.rb",
      "lib/sprockets/packager/version.rb",
      "lib/sprockets/packager/watcher.rb",
@@ -41,7 +41,7 @@ Gem::Specification.new do |s|
   s.rdoc_options = ["--charset=UTF-8"]
   s.require_paths = ["lib"]
   s.rubygems_version = %q{1.3.7}
-  s.summary = %q{sprockets-packager-1.0.8}
+  s.summary = %q{sprockets-packager-1.0.9}
   s.test_files = [
     "spec/packager/config_spec.rb",
      "spec/packager/helper_spec.rb",
