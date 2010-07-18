@@ -27,8 +27,11 @@ module Sprockets
               :root => Sprockets::Packager.watcher.tmp_path
         end
 
-        Sprockets::Packager.watcher.prepare!
+        config.to_prepare do
+          Sprockets::Packager.watcher.prepare!
+        end
       end
+    
     end
   end
 end
