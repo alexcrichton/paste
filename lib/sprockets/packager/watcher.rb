@@ -1,10 +1,11 @@
 module Sprockets
   module Packager
     class Watcher
+      CACHE_FILE = 'sprockets.yml'
       
       attr_reader :tmp_path, :erb_path, :secretary_config
       attr_accessor :watch_changes, :destination
-      
+
       def initialize options = {}
         @options            = Sprockets::Packager.options.merge(options)
         @secretaries        = {}
@@ -30,12 +31,18 @@ module Sprockets
             :expand_paths => false,
             :load_path    => @options[:load_path].map(&:to_s)
         }
+        
+        @sprockets_cache = (YAML.load_file tmp_path.join(CACHE_FILE) rescue {})
       end
 
       def prepare!
         destination.mkpath
         erb_path.mkpath
         render_erb
+      end
+      
+      def rebuild_cached_sprockets!
+        @sprockets_cache.values.each { |sprockets| sprocketize sprockets }
       end
 
       def sprocketize *sprockets
@@ -127,6 +134,7 @@ module Sprockets
       end
       
       def register_secretary sprocket, source_sprockets
+        update_sprockets_cache_file! sprocket, source_sprockets
         config = secretary_config.dup
         environment = Sprockets::Environment.new config[:root],
                                                  config[:load_path]
@@ -137,6 +145,16 @@ module Sprockets
         end
 
         @secretaries[sprocket] = Sprockets::Secretary.new config
+      end
+
+      def update_sprockets_cache_file! sprocket, sources
+        if @sprockets_cache[sprocket] != sources
+          @sprockets_cache[sprocket] = sources
+
+          File.open(tmp_path.join(CACHE_FILE), 'w') do |f|
+            f << YAML.dump(@sprockets_cache)
+          end
+        end
       end
 
       def changed? path, last_mod_time

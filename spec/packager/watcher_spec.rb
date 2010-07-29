@@ -28,6 +28,38 @@ describe Sprockets::Packager::Watcher do
       File.read(actual_file).chomp.should == "foo()\nbar()\nbaz()"
     end
     
+    it "should rebuild the sprockets after the file has been removed" do
+      sprocket = @watcher.sprocketize('foo', 'bar', 'foo/baz')[0]
+
+      actual_file = @watcher.destination.join sprocket
+      File.delete(actual_file)
+      @watcher.sprocketize('foo', 'bar', 'foo/baz')
+
+      File.read(actual_file).chomp.should == "foo()\nbar()\nbaz()"
+    end
+
+    context "rebuilding cached sprockets" do
+      before :each do
+        sprocket = @watcher.sprocketize('foo', 'bar', 'foo/baz')[0]
+
+        @actual_file = @watcher.destination.join sprocket
+        File.delete(@actual_file)
+      end
+
+      it "should rebuild within the same watcher" do
+        @watcher.rebuild_cached_sprockets!
+
+        File.read(@actual_file).chomp.should == "foo()\nbar()\nbaz()"
+      end
+      
+      it "should allow another watcher to rebuild it" do
+        @watcher = Sprockets::Packager::Watcher.new :expand_includes => false
+        @watcher.rebuild_cached_sprockets!
+        
+        File.read(@actual_file).chomp.should == "foo()\nbar()\nbaz()"
+      end
+    end
+    
     describe "regenerating files" do
       before :each do
         @watcher.watch_changes = true
