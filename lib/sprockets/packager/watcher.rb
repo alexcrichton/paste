@@ -42,6 +42,7 @@ module Sprockets
       end
       
       def rebuild_cached_sprockets!
+        prepare!
         @sprockets_cache.values.each { |sprockets| sprocketize sprockets }
       end
 

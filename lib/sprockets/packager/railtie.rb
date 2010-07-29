@@ -2,7 +2,7 @@ module Sprockets
   module Packager
     class Railtie < Rails::Railtie
       
-      initializer 'sprockets_packager.' do
+      initializer 'sprockets_packager' do
         Sprockets::Packager.options.merge!(
           :watch_changes   => Rails.env.development?,
           :expand_includes => Rails.env.development?,
@@ -27,11 +27,18 @@ module Sprockets
               :root => Sprockets::Packager.watcher.tmp_path
         end
 
-        config.to_prepare do
-          Sprockets::Packager.watcher.prepare!
+        if Rails.env.development?
+          config.to_prepare do
+            Sprockets::Packager.watcher.prepare!
+          end
         end
+        
       end
     
+      rake_tasks do
+        load "tasks/sprockets_packager.rake"
+      end
+      
     end
   end
 end

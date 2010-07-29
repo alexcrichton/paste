@@ -35,6 +35,10 @@ I would recommend you add `public/javascripts/*` to your gitignore. I find it si
 In production, whenever `sprockets_include_tag` is called, the unique filename is generated, and if the file does not exist, it is generated via `Sprockets::Secretary`.  
 Subsequent calls to `sprockets_include_tag` will never update the generated sprocket, and there is no other way that the sprocket will be generated.
 
+For deployment, you probably don't want the first request to every page spend time rebuild the sprocket for that page. This gem caches all of the built sprockets to the file `tmp/sprockets-cache/sprockets.yml`. You probably want to symlink the entire directory to your deployment, but you can also just symlink this file.
+
+You then need to run the `rake sprockets:rebuild` before your deployment goes live to rebuild everything
+
 #### Development
 Here, whenever `sprockets_include_tag` is called, the files are examined and the dependency tree is determined. The files are then included in the order which satisfies the dependency tree.  
 Every request will trigger a refresh of the generated files in addition to them being generated when `sprockets_include_tag` is called.
