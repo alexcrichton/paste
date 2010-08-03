@@ -3,11 +3,9 @@ require 'spec_helper'
 describe Sprockets::Packager::Watcher do
   
   before :each do
-    @source_dir  = Sprockets::Packager.options[:load_path][0]
-    FileUtils.mkdir_p @source_dir + '/foo'
-    File.open(@source_dir + '/foo.js', 'w'){ |f| f << 'foo()' }
-    File.open(@source_dir + '/bar.js', 'w'){ |f| f << 'bar()' }
-    File.open(@source_dir + '/foo/baz.js', 'w'){ |f| f << 'baz()' }
+    write_sprocket 'foo', 'foo()'
+    write_sprocket 'bar', 'bar()'
+    write_sprocket 'foo/baz', 'baz()'
   end
 
   context "compact mode" do    
@@ -24,39 +22,35 @@ describe Sprockets::Packager::Watcher do
     it "should generate the concatenation when the destination doesn't exist" do
       sprocket = @watcher.sprocketize('foo', 'bar', 'foo/baz')[0]
 
-      actual_file = @watcher.destination.join sprocket
-      File.read(actual_file).chomp.should == "foo()\nbar()\nbaz()"
+      @watcher.should have_in_sprocket(sprocket, "foo()\nbar()\nbaz()")
     end
     
     it "should rebuild the sprockets after the file has been removed" do
       sprocket = @watcher.sprocketize('foo', 'bar', 'foo/baz')[0]
 
-      actual_file = @watcher.destination.join sprocket
-      File.delete(actual_file)
+      delete_generated sprocket
       @watcher.sprocketize('foo', 'bar', 'foo/baz')
 
-      File.read(actual_file).chomp.should == "foo()\nbar()\nbaz()"
+      @watcher.should have_in_sprocket(sprocket, "foo()\nbar()\nbaz()")
     end
 
     context "rebuilding cached sprockets" do
       before :each do
-        sprocket = @watcher.sprocketize('foo', 'bar', 'foo/baz')[0]
-
-        @actual_file = @watcher.destination.join sprocket
-        File.delete(@actual_file)
+        @sprocket = @watcher.sprocketize('foo', 'bar', 'foo/baz')[0]
+        delete_generated @sprocket
       end
 
       it "should rebuild within the same watcher" do
         @watcher.rebuild_cached_sprockets!
 
-        File.read(@actual_file).chomp.should == "foo()\nbar()\nbaz()"
+        @watcher.should have_in_sprocket(@sprocket, "foo()\nbar()\nbaz()")
       end
       
       it "should allow another watcher to rebuild it" do
         @watcher = Sprockets::Packager::Watcher.new :expand_includes => false
         @watcher.rebuild_cached_sprockets!
-        
-        File.read(@actual_file).chomp.should == "foo()\nbar()\nbaz()"
+
+        @watcher.should have_in_sprocket(@sprocket, "foo()\nbar()\nbaz()")
       end
     end
     
@@ -68,25 +62,19 @@ describe Sprockets::Packager::Watcher do
       it "should occur if any file is changed" do
         sprocket = @watcher.sprocketize('foo', 'bar')[0]
 
-        File.open(@source_dir + '/foo.js', 'w') { |f| f << 'foobar()' }
-        File.utime(Time.now, Time.now + 42, @source_dir + '/foo.js')
-
+        write_sprocket 'foo', 'foobar()', Time.now + 42
         @watcher.sprocketize('foo', 'bar')
 
-        gen = @watcher.destination.join(sprocket)
-        File.read(gen).chomp.should == "foobar()\nbar()"
+        @watcher.should have_in_sprocket(sprocket, "foobar()\nbar()")
       end
 
       it "should not occur if no files have changed" do
         sprocket = @watcher.sprocketize('foo', 'bar')[0]
 
-        File.open(@source_dir + '/foo.js', 'w') { |f| f << 'foobar()' }
-        File.utime(Time.now, Time.now - 42, @source_dir + '/foo.js')
-
+        write_sprocket 'foo', 'foobar', Time.now - 42
         @watcher.sprocketize('foo', 'bar')
 
-        gen = @watcher.destination.join(sprocket)
-        File.read(gen).chomp.should == "foo()\nbar()"
+        @watcher.should have_in_sprocket(sprocket, "foo()\nbar()")
       end
     end
   end
@@ -105,16 +93,14 @@ describe Sprockets::Packager::Watcher do
     it "should generate the concatenation when the destination doesn't exist" do
       @watcher.sprocketize('foo', 'bar', 'foo/baz')[0]
 
-      File.read(@watcher.destination.join('foo.js')).should == "foo()"
-      File.read(@watcher.destination.join('bar.js')).should == "bar()"
-      File.read(@watcher.destination.join('foo/baz.js')).should == "baz()"
+      @watcher.should have_in_sprocket('foo', 'foo()')
+      @watcher.should have_in_sprocket('bar', 'bar()')
+      @watcher.should have_in_sprocket('foo/baz', 'baz()')
     end
     
     it "should return the sprockets with dependencies satisfied" do
-      File.open(@source_dir + '/foo.js', 'w') { |f| 
-        # Sprockets are smart apparently, have to have at least one line in file
-        f << "//= require <bar>\nfoo()" 
-      }
+      # Sprockets are smart apparently, have to have at least one line in file
+      write_sprocket 'foo', "//= require <bar>\nfoo()" 
 
       @watcher.sprocketize('foo', 'bar').should == ['bar.js', 'foo.js']
     end
@@ -122,28 +108,26 @@ describe Sprockets::Packager::Watcher do
     describe "regenerating files" do
       it "should only regenerate modified files" do
         @watcher.sprocketize('foo', 'bar', 'foo/baz')
-        
-        File.open(@source_dir + '/foo.js', 'w') { |f| f << 'foo(foo)' }
-        File.utime(Time.now, Time.now - 42, @source_dir + '/foo.js')
-        File.open(@source_dir + '/bar.js', 'w') { |f| f << 'bar(bar)' }
-        File.utime(Time.now, Time.now + 42, @source_dir + '/bar.js')
-        
+
+        write_sprocket 'foo', 'foo(foo)', Time.now - 42
+        write_sprocket 'bar', 'bar(bar)', Time.now + 42
+
         @watcher.sprocketize('foo', 'bar', 'foo/baz')
-        
-        File.read(@watcher.destination.join('foo.js')).should == "foo()"
-        File.read(@watcher.destination.join('bar.js')).should == "bar(bar)"
-        File.read(@watcher.destination.join('foo/baz.js')).should == "baz()"
+
+        @watcher.should have_in_sprocket('foo', 'foo()')
+        @watcher.should have_in_sprocket('bar', 'bar(bar)')
+        @watcher.should have_in_sprocket('foo/baz', 'baz()')
       end
     end
   end
   
   it "should sprocketize a variety of regular/erb files" do
     @watcher = Sprockets::Packager::Watcher.new :expand_includes => false
-    
-    File.open(@source_dir + '/foobar.js.erb', 'w') { |f| f << '<%= 5 * 5 %>' }
-    
+
+    write_sprocket 'foobar.js.erb', '<%= 5 * 5 %>'
     @watcher.render_erb
+
     sprocket = @watcher.sprocketize('foobar', 'foo')[0]
-    File.read(@watcher.destination.join(sprocket)).chomp.should == "25\nfoo()"
+    @watcher.should have_in_sprocket(sprocket, "25\nfoo()")
   end
 end

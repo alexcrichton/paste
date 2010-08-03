@@ -7,9 +7,9 @@ describe 'Configuration of Sprockets::Packager' do
     
     source_dir = Sprockets::Packager.options[:root] + '/sources'
     File.open(source_dir.to_s + '/foo.js', 'w') { |f| f << 'foo()' }
-    
+
     @watcher.sprocketize 'foo'
 
-    File.read(@watcher.destination.join('foo.js')).should == 'foo()'
+    @watcher.should have_in_sprocket('foo', 'foo()')
   end
 end

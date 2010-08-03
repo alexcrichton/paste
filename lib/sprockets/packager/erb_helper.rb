@@ -6,7 +6,7 @@ module Sprockets
       def config
         Rails.application.config.action_controller if defined?(Rails)
       end
-  
+
       def result *args
         super binding
       end

@@ -28,17 +28,4 @@ RSpec.configure do |c|
   end
 end
 
-
-def dump_tree
-  root = Sprockets::Packager.options[:root]
-
-  raise Dir[root + '/**/*'].map { |f|
-    unless File.directory?(f)
-      out = f
-      out += "\n\t- " + File.read(f).gsub("\n", "\n\t- ")
-      out += "\n\t\t(#{File.mtime(f)})"
-      f = out
-    end
-    f
-  }.join("\n")
-end
+Dir[File.dirname(__FILE__) + '/support/*.rb'].each { |f| load f }
