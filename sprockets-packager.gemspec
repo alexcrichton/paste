@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{sprockets-packager}
-  s.version = "1.0.9"
+  s.version = "1.0.10"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Alex Crichton"]
-  s.date = %q{2010-07-15}
+  s.date = %q{2010-08-03}
   s.description = %q{Sprocket Packaging for Rails 3}
   s.email = %q{alex@alexcrichton.com}
   s.extra_rdoc_files = [
@@ -18,36 +18,49 @@ Gem::Specification.new do |s|
   ]
   s.files = [
     ".gitignore",
+     "Gemfile",
      "LICENSE",
      "README.md",
      "Rakefile",
      "VERSION",
      "lib/sprockets-packager.rb",
      "lib/sprockets/packager.rb",
+     "lib/sprockets/packager/cache.rb",
+     "lib/sprockets/packager/compressor.rb",
      "lib/sprockets/packager/erb_helper.rb",
      "lib/sprockets/packager/helper.rb",
      "lib/sprockets/packager/rack_updater.rb",
      "lib/sprockets/packager/railtie.rb",
      "lib/sprockets/packager/version.rb",
      "lib/sprockets/packager/watcher.rb",
+     "lib/tasks/sprockets_packager.rake",
+     "scripts/test",
+     "spec/packager/cache_spec.rb",
+     "spec/packager/compress_spec.rb",
      "spec/packager/config_spec.rb",
+     "spec/packager/erb_spec.rb",
      "spec/packager/helper_spec.rb",
-     "spec/packager/watcher_erb_spec.rb",
      "spec/packager/watcher_spec.rb",
      "spec/spec_helper.rb",
+     "spec/support/helpers.rb",
+     "spec/support/matchers.rb",
      "sprockets-packager.gemspec"
   ]
   s.homepage = %q{http://github.com/alexcrichton/sprockets-packager}
   s.rdoc_options = ["--charset=UTF-8"]
   s.require_paths = ["lib"]
   s.rubygems_version = %q{1.3.7}
-  s.summary = %q{sprockets-packager-1.0.9}
+  s.summary = %q{sprockets-packager-1.0.10}
   s.test_files = [
-    "spec/packager/config_spec.rb",
+    "spec/packager/cache_spec.rb",
+     "spec/packager/compress_spec.rb",
+     "spec/packager/config_spec.rb",
+     "spec/packager/erb_spec.rb",
      "spec/packager/helper_spec.rb",
-     "spec/packager/watcher_erb_spec.rb",
      "spec/packager/watcher_spec.rb",
-     "spec/spec_helper.rb"
+     "spec/spec_helper.rb",
+     "spec/support/helpers.rb",
+     "spec/support/matchers.rb"
   ]
 
   if s.respond_to? :specification_version then
