@@ -37,7 +37,7 @@ describe Sprockets::Packager::Watcher do
     it "should raise a descriptive exception when the sprocket doesn't exist" do
       lambda { 
         @watcher.sprocketize 'random' 
-      }.should raise_exception(/sprocket random/i)
+      }.should raise_error(/sprocket random/i)
     end
 
     describe "regenerating files" do
