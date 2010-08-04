@@ -24,7 +24,7 @@ describe Sprockets::Packager::Watcher do
 
       @watcher.should have_in_sprocket(sprocket, "foo()\nbar()\nbaz()")
     end
-    
+
     it "should rebuild the sprockets after the file has been removed" do
       sprocket = @watcher.sprocketize('foo', 'bar', 'foo/baz')[0]
 
@@ -32,26 +32,6 @@ describe Sprockets::Packager::Watcher do
       @watcher.sprocketize('foo', 'bar', 'foo/baz')
 
       @watcher.should have_in_sprocket(sprocket, "foo()\nbar()\nbaz()")
-    end
-
-    context "rebuilding cached sprockets" do
-      before :each do
-        @sprocket = @watcher.sprocketize('foo', 'bar', 'foo/baz')[0]
-        delete_generated @sprocket
-      end
-
-      it "should rebuild within the same watcher" do
-        @watcher.rebuild_cached_sprockets!
-
-        @watcher.should have_in_sprocket(@sprocket, "foo()\nbar()\nbaz()")
-      end
-      
-      it "should allow another watcher to rebuild it" do
-        @watcher = Sprockets::Packager::Watcher.new :expand_includes => false
-        @watcher.rebuild_cached_sprockets!
-
-        @watcher.should have_in_sprocket(@sprocket, "foo()\nbar()\nbaz()")
-      end
     end
     
     describe "regenerating files" do
