@@ -7,17 +7,12 @@ module Sprockets
         initialize_cache if @sprockets_cache.nil?
         
         prepare!
+
         @sprockets_cache.values.each { |sprockets|
           result = sprocketize sprockets
 
           if options[:compress] == 'google'
-            result.each do |sprocket|
-              begin
-                google_compress sprocket
-              rescue => e
-                puts "Error compressing: #{e}"
-              end
-            end
+            result.each { |sprocket| google_compress sprocket }
           end
         }
       end

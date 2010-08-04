@@ -1,3 +1,8 @@
+require 'sprockets/packager/cache'
+require 'sprockets/packager/compressor'
+require 'sprockets/packager/helper'
+require 'sprockets/packager/erb_helper'
+
 module Sprockets
   module Packager
     class Watcher
@@ -85,7 +90,7 @@ module Sprockets
           end
         end
       end
-
+      
       protected
       
       def expand sprockets

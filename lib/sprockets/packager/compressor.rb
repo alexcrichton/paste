@@ -1,7 +1,10 @@
+require 'net/http'
+require 'json'
+
 module Sprockets
   module Packager
     module Compressor
-      
+
       def google_compress sprocket
         file = destination.join sprocket
         uri  = URI.parse('http://closure-compiler.appspot.com/compile')
@@ -11,10 +14,10 @@ module Sprockets
           :output_format     => 'json', 
           :output_info       => 'compiled_code'
         )
-        json = JSON.load(body)
+        json = JSON.load(body.body)
 
-        if json['compiled_code']
-          file.open('w') { |f| f << json['compiled_code'] }
+        if json['compiledCode']
+          file.open('w') { |f| f << json['compiledCode'] }
         else
           raise "Google couldn't compile #{sprocket}!"
         end

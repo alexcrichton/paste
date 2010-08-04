@@ -1,15 +1,9 @@
 require 'fileutils'
 require 'pathname'
-require 'erb'
 require 'digest/sha1'
-
 require 'sprockets'
-require 'sprockets/packager'
-require 'sprockets/packager/cache'
-require 'sprockets/packager/compressor'
-require 'sprockets/packager/helper'
+
 require 'sprockets/packager/watcher'
-require 'sprockets/packager/erb_helper'
 
 module Sprockets
   module Packager

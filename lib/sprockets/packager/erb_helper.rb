@@ -1,3 +1,5 @@
+require 'erb'
+
 module Sprockets
   module Packager
     class ERBHelper < ERB

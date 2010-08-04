@@ -37,3 +37,9 @@ RSpec::Matchers.define :exist do
     File.exists?(file)
   end
 end
+
+RSpec::Matchers.define :contain do |substr|
+  match do |str|
+    !str.index(substr).nil?
+  end
+end
