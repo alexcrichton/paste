@@ -142,7 +142,9 @@ module Sprockets
 
         config[:source_files] = source_sprockets.map do |source_sprocket|
           source_sprocket += '.js' unless source_sprocket.end_with? '.js'
-          environment.find(source_sprocket).to_s
+          found = environment.find(source_sprocket).to_s
+          raise "Sprocket #{source_sprocket} couldn't be found!" if found == ''
+          found
         end
 
         @secretaries[sprocket] = Sprockets::Secretary.new config
