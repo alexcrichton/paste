@@ -24,3 +24,13 @@ namespace :gem do
     system "gem push pkg/sprockets-packager-#{Sprockets::Packager::Version::STRING}.gem"
   end
 end
+
+namespace :sprockets do
+  desc "Install gems and run the tests"
+  task :test do
+    destination = File.expand_path('../tmp', __FILE__)
+    FileUtils.mkdir_p destination
+    system "bundle install #{destination}"
+    exec "bundle exec rspec spec --color"
+  end
+end
