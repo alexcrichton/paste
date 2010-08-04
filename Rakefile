@@ -28,6 +28,7 @@ end
 namespace :sprockets do
   desc "Install gems and run the tests"
   task :test do
+    ENV.delete 'BUNDLE_CONFIG'
     destination = File.expand_path('../tmp', __FILE__)
     FileUtils.mkdir_p destination
     system "bundle install #{destination}"

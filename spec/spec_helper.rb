@@ -1,9 +1,11 @@
-require 'fileutils'
 require 'rubygems'
+require 'bundler'
+
+ENV['BUNDLER_GEMFILE'] = File.expand_path('../../Gemfile', __FILE__)
+Bundler.setup :default, :test
+
+require 'fileutils'
 require 'rspec/core'
-
-$LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
-
 require 'sprockets-packager'
 
 tmp_dir = File.expand_path('../tmp', __FILE__)
