@@ -33,13 +33,13 @@ describe Sprockets::Packager::Watcher do
 
       @watcher.should have_in_sprocket(sprocket, "foo()\nbar()\nbaz()")
     end
-    
+
     it "should raise a descriptive exception when the sprocket doesn't exist" do
       lambda { 
         @watcher.sprocketize 'random' 
       }.should raise_exception(/sprocket random/i)
     end
-    
+
     describe "regenerating files" do
       before :each do
         @watcher.watch_changes = true
