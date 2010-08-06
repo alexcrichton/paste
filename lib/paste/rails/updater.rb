@@ -7,7 +7,7 @@ module Paste
       end
 
       def call env
-        Paste::Rails.glue.update_registered
+        Paste::Rails.glue.rebuild
         @app.call env
       end
 

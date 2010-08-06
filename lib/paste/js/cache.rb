@@ -3,48 +3,78 @@ require 'yaml'
 module Paste
   module JS
     module Cache
-      extend ActiveSupport::Concern
-      
-      included do
-        alias_method_chain :paste, :cache
+
+      def rebuild
+        rebuild_if do |result, sources|
+          needs_update? result
+        end
       end
 
       def rebuild!
-        initialize_cache if @cache.nil?
+        rebuild_if { |r, s| true }
+      end
 
-        @cache.each_pair do |result, sources|
+      def rebuild_if &blk
+        results.each_pair do |result, sources|
           begin
-            register_secretary sources
-            write_sprocket result
+            write_result result if blk.call(result, sources[:sources])
           rescue ResolveError
-            @cache.delete result
+            results.delete result
           end
         end
       end
 
-      def paste_with_cache *sprockets
-        initialize_cache if @cache.nil?
-        
-        if @cache[sprocket_name(sprockets)] != sprockets
-          @cache[sprocket_name(sprockets)] = sprockets
+      def register sources
+        if results[result_name(sources)][:sources] != sources
+          results[result_name(sources)] = {
+            :sources => sources,
+            :parser  => config.parser.new(self, sources)
+          }
+
           write_cache_to_disk
         end
-        paste_without_cache *sprockets
+      end
+
+      def registered? sources
+        results.key? result_name(sources)
+      end
+
+      def needs_update? result
+        path = destination result
+        return true unless File.exists?(path)
+
+        results[result][:sources].inject(false) do |prev, source|
+          prev || File.mtime(path) < File.mtime(find(source))
+        end
+      end
+
+      def results
+        return @results if defined?(@results)
+        @results = Hash.new { {} }
+        
+        (YAML.load_file tmp_path(config.cache_file) rescue []).each do |sources|
+          register sources
+        end
+        
+        @results
       end
 
       protected
-      
+
       def write_cache_to_disk
         file = tmp_path config.cache_file
         FileUtils.mkdir_p File.dirname(file)
+
+        to_write = []
+        results.each do |result, hash|
+          to_write << hash[:sources]
+        end
+
         File.open(file, 'w') do |f|
-          f << YAML.dump(@cache)
+          f << YAML.dump(to_write)
         end
       end
 
-      def initialize_cache
-        @cache = (YAML.load_file tmp_path(config.cache_file) rescue {})
-      end
     end
   end
 end

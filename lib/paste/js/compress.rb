@@ -4,7 +4,7 @@ module Paste
   module JS
     module Compress
       extend ActiveSupport::Concern
-      
+
       included do
         alias_method_chain :rebuild!, :compression
       end
@@ -12,15 +12,15 @@ module Paste
       def rebuild_with_compression! options = {}
         rebuild_without_compression!
 
-        secretaries.keys.each do |sprocket|
-          compress sprocket, options
+        results.keys.each do |result|
+          compress result, options
         end
       end
 
-      def compress sprocket, options = {}
+      def compress result, options = {}
         case options[:compress]
           when 'google'
-            google_compress sprocket, options
+            google_compress result, options
           when nil, false
             # Compression not asked for
           else
@@ -30,8 +30,8 @@ module Paste
 
       protected
 
-      def google_compress sprocket, options = {}
-        file = destination sprocket
+      def google_compress result, options = {}
+        file = destination result
         uri  = URI.parse('http://closure-compiler.appspot.com/compile')
         req  = Net::HTTP.post_form(uri,
           :js_code           => File.read(file),

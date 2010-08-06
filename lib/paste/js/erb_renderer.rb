@@ -9,17 +9,21 @@ module Paste
           end
         end
       end
-      
+
       def render_erb source
         relative    = source.sub(/\.erb$/, '')
         to_generate = erb_path relative
         source      = find source
 
-        if needs_update? to_generate, File.mtime(source)
+        if !File.existsneeds_update? to_generate, File.mtime(source)
           FileUtils.mkdir_p File.dirname(to_generate)
           contents = Helper.new(File.read(source)).result
           File.open(to_generate, 'w') { |f| f << contents }
         end
+      end
+
+      def render_erb_if source, &block
+        
       end
 
       class Helper < ERB

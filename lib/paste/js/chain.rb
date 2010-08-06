@@ -4,52 +4,32 @@ module Paste
 
       def paste *sources
         dependencies = []
-        current_path = []
-        
+
         sources.each do |source|
-          in_order_traversal source, dependencies, current_path
-          register_secretary [source] unless has_secretary? source
+          register [source] unless registered? [source]
+          source_deps  = results[result_name(source)][:parser].dependencies
+          dependencies = dependencies | source_deps
+        end
+        dependencies.map!{ |d| result_name d }
+
+        dependencies.each do |dep|
+          write_result dep if needs_update?(dep)
         end
 
-        dependencies.each do |source|
-          source << '.js' unless source.end_with? '.js'
-          file = destination source
-
-          write_sprocket source if needs_update?(file, File.mtime(find(source)))
-        end
+        dependencies
       end
 
-      def write_sprocket sprocket
-        file = destination sprocket
+      def write_result result
+        file = destination result
 
         FileUtils.mkdir_p File.dirname(file)
-        FileUtils.cp find(sprocket), file
+        FileUtils.cp find(result), file
       end
 
-      def sprocket_name sprockets
-        result = sprockets.first
+      def result_name sources
+        result = sources.first
         result += '.js' unless result.end_with?('.js')
         result
-      end
-
-      protected
-
-      def in_order_traversal source, dependencies, current_path
-        return if dependencies.include? source
-        raise "Circular dependency at #{source}!" if current_path.include? source
-
-        current_path.push source
-
-        source_file = Sprockets::SourceFile.new environment, 
-            Sprockets::Pathname.new(environment, find(source))
-        source_file.source_lines.each do |line|
-          if line.require?
-            to_require = line.require[/^.(.*).$/, 1]
-            in_order_traversal to_require, dependencies, current_path
-          end
-        end
-
-        dependencies.push current_path.pop
       end
 
     end

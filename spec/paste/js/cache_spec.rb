@@ -20,7 +20,7 @@ describe Paste::JS::Unify, 'building cached sprockets' do
   it "should allow another watcher to rebuild it" do
     subject = Paste::JS::Unify.new
     subject.rebuild!
-  
+
     subject.should have_in_sprocket(@result, "foo()\nbar()\nbaz()")
   end
 

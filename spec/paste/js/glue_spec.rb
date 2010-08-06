@@ -42,7 +42,7 @@ describe Paste do
         subject.paste 'random' 
       }.should raise_error(/source random/i)
     end
-    
+
     describe "regenerating files" do
       it "should occur if any file is changed" do
         sprocket = subject.paste('foo', 'bar')[0]
@@ -52,7 +52,7 @@ describe Paste do
 
         subject.should have_in_sprocket(sprocket, "foobar()\nbar()")
       end
-    
+
       it "should not occur if no files have changed" do
         sprocket = subject.paste('foo', 'bar')[0]
 
@@ -70,7 +70,7 @@ describe Paste do
         Paste::Test.write 'foo', 'foobar()', Time.now - 42
         Paste::Test.write 'bar', 'barbar()', Time.now + 42
 
-        subject.update_registered
+        subject.rebuild
 
         subject.should have_in_sprocket(result1, 'foo()')
         subject.should have_in_sprocket(result2, "barbar()\nbaz()")
@@ -81,7 +81,7 @@ describe Paste do
   describe Paste::JS::Chain do
     it "should return the sprockets given" do
       sprockets = subject.paste 'foo', 'bar', 'foo/baz'
-  
+
       sprockets.should == ['foo.js', 'bar.js', 'foo/baz.js']
     end
     
@@ -147,7 +147,7 @@ EOF
         Paste::Test.write 'foo', 'foobar()', Time.now - 42
         Paste::Test.write 'bar', 'barbar()', Time.now + 42
 
-        subject.update_registered
+        subject.rebuild
 
         subject.should have_in_sprocket('foo', 'foo()')
         subject.should have_in_sprocket('bar', 'barbar()')

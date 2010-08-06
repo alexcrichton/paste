@@ -22,14 +22,14 @@ describe Paste::JS::Base do
   
     subject.erb_path('foo/bar/baz.js').should have_contents('foobar')
   end
-  
+
   it "shouldn't try to render regular js files" do
     Paste::Test.write 'foo', 'foo()'
     subject.render_all_erb
-  
+
     subject.erb_path('foo.js').should_not exist
   end
-  
+
   context "pasting a variety of regular/erb files" do
     shared_examples_for 'an erb paster' do
       it "should use the generated ERB file when pasting" do

@@ -31,13 +31,13 @@ module Paste
     def find source
       source += '.js' unless source.end_with?('.js') || source.end_with?('.erb')
 
-      result = environment.find(source).to_s
-      raise ResolveError, "Source #{source} couldn't be found!" if result.blank?
-      result
-    end
+      path = (load_path + ['']).detect do |path|
+        File.exists? File.join(path, source)
+      end
 
-    def environment
-      @environment ||= Sprockets::Environment.new root, load_path
+      raise ResolveError, "Source #{source} couldn't be found!" if path.nil?
+
+      File.join(path, source)
     end
 
     protected
