@@ -1,24 +1,28 @@
+require 'rubygems'
+require 'bundler/setup'
+
+Bundler.require :default, :test
+
 require 'fileutils'
 require 'rspec/core'
-require 'sprockets-packager'
+require 'paste'
 
 tmp_dir = File.expand_path('../tmp', __FILE__)
 
-options = {
-  :root        => tmp_dir,
-  :tmp_path    => 'temporary',
-  :destination => 'destination',
-  :load_path   => [tmp_dir + '/sources']
-}
-Sprockets::Packager.options.merge!(options)
+Paste::JS.configure do |config|
+  config.root        = tmp_dir
+  config.tmp_path    = 'temporary'
+  config.destination = 'destination'
+  config.load_path   = [tmp_dir + '/sources']
+end
 
 RSpec.configure do |c|
   c.color_enabled = true
 
   c.before(:each) do
-    options[:load_path].each { |p| FileUtils.mkdir_p p }
+    Paste::JS::Base.config.load_path.each { |p| FileUtils.mkdir_p p }
   end
-  
+
   c.after(:each) do
     FileUtils.rm_rf tmp_dir
   end
