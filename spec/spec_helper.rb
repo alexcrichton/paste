@@ -7,24 +7,16 @@ require 'fileutils'
 require 'rspec/core'
 require 'paste'
 
-tmp_dir = File.expand_path('../tmp', __FILE__)
-
 Paste::JS.configure do |config|
-  config.root        = tmp_dir
-  config.tmp_path    = 'temporary'
-  config.destination = 'destination'
-  config.load_path   = [tmp_dir + '/sources']
+  config.root        = File.dirname(__FILE__) + '/tmp'
+  config.load_path   = ['sources']
 end
 
 RSpec.configure do |c|
   c.color_enabled = true
 
-  c.before(:each) do
-    Paste::JS::Base.config.load_path.each { |p| FileUtils.mkdir_p p }
-  end
-
   c.after(:each) do
-    FileUtils.rm_rf tmp_dir
+    FileUtils.rm_rf Paste::JS.config.root
   end
 end
 
