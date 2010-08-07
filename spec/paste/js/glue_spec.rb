@@ -87,7 +87,7 @@ describe Paste do
     
     it "should generate the concatenation when the destination doesn't exist" do
       subject.paste('foo', 'bar', 'foo/baz')
-  
+
       subject.should have_in_result('foo', 'foo()')
       subject.should have_in_result('bar', 'bar()')
       subject.should have_in_result('foo/baz', 'baz()')
@@ -136,6 +136,26 @@ describe Paste do
 
         subject.should have_in_result('foo', 'foo()')
         subject.should have_in_result('bar', 'barbar()')
+      end
+    end
+    
+    describe "implicit dependencies" do
+      before :each do
+        Paste::Test.write 'foo', ''
+        Paste::Test.write 'bar', '//= require <foo>'
+      end
+
+      it "should be included when pasting" do
+        subject.paste('bar').should == ['foo.js', 'bar.js']
+      end
+
+      it "should be regenerated" do
+        result = subject.paste('bar').first
+        
+        Paste::Test.write 'foo', 'foobar()', Time.now + 42
+
+        subject.paste('bar')
+        subject.should have_in_result(result, 'foobar()')
       end
     end
   end
