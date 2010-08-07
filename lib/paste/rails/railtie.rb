@@ -1,26 +1,29 @@
 module Paste
   module Rails
-    class Railtie < Rails::Railtie
+    class Railtie < ::Rails::Railtie
   
       initializer 'paste_initializer' do
-        Paste::JS.config.root = Rails.root
+        Paste::JS.config.root = ::Rails.root
         ActionView::Base.send :include, Helper
 
-        if Rails.env.development?
+        if ::Rails.env.development?
           Paste::Rails.glue = Paste::JS::Chain.new
           config.app_middleware.use Paste::Rails::Updater
         else
           Paste::Rails.glue = Paste::JS::Unify.new
+          config.to_prepare do
+            Paste::Rails.glue.render_all_erb
+          end
         end
 
-        if Paste::Rails.config.serve_assets
-          Paste::Rails.config.destination = 'tmp/javascripts'
+        if Paste::JS.config.serve_assets
+          Paste::JS.config.destination = 'tmp/javascripts'
 
           # We want this serving to be at the very front
           config.app_middleware.insert_before Rack::Runtime,
               ::Rack::Static, 
               :urls => ['/javascripts'],
-              :root => Paste::Rails.tmp_path
+              :root => Paste::JS.tmp_path
         end
       end
 

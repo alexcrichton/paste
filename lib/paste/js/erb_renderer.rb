@@ -16,7 +16,7 @@ module Paste
             File.mtime(source) > File.mtime(to_generate)
 
           FileUtils.mkdir_p File.dirname(to_generate)
-          contents = Helper.new(File.read(source)).result
+          contents = PasteERBHelper.new(File.read(source)).result
           File.open(to_generate, 'w') { |f| f << contents }
         end
       end
@@ -32,22 +32,24 @@ module Paste
         sources.flatten
       end
 
-      class Helper < ERB
-        include ActionView::Helpers if defined?(ActionView::Helpers)
-
-        def config
-          Rails.application.config.action_controller if defined?(Rails)
-        end
-
-        def result *args
-          super binding
-        end
-
-        def controller
-          nil
-        end
-      end
-
     end
+  end
+end
+
+# This needs to be outside of the module because we don't want to
+# force templates to always do ::Rails
+class PasteERBHelper < ERB
+  include ActionView::Helpers if defined?(ActionView::Helpers)
+
+  def config
+    Rails.application.config.action_controller if defined?(Rails)
+  end
+
+  def result *args
+    super binding
+  end
+
+  def controller
+    nil
   end
 end

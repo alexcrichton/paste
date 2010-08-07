@@ -38,10 +38,13 @@ describe Paste::Rails::Helper do
   end
 
   it "should return the javascript include tags" do
-    @helper.stub(:javascript_include_tag).with('foo', 'bar').and_return 'foo.js'
-    Paste::Rails.stub(:glue).and_return(mock(Paste::Glue, :paste => nil))
+    @helper.should_receive(:javascript_include_tag).with(
+        'foo', 'bar').and_return 'foo.js'
+    Paste::Rails.stub(:glue).and_return(
+      mock(Paste::Glue, :paste => ['foo', 'bar'])
+    )
 
-    @helper.paste_tags('foo', 'bar').should == 'foo.js'
+    @helper.paste_tags('foo').should == 'foo.js'
   end
   
   describe "the default glue value" do

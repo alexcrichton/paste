@@ -30,6 +30,13 @@ describe Paste::JS::Base do
     subject.erb_path('foo.js').should_not exist
   end
 
+  it "should render when being rebuilt" do
+    Paste::Test.write 'foo.js.erb', 'foobar'
+    subject.rebuild!
+  
+    subject.erb_path('foo.js').should have_contents('foobar')
+  end
+
   context "pasting a variety of regular/erb files" do
     shared_examples_for 'an erb paster' do
       it "should use the generated ERB file when pasting" do
@@ -69,6 +76,19 @@ describe Paste::JS::Base do
       subject.render_all_erb
       
       subject.erb_path('foo.js').should have_contents('foo')
+    end
+  end
+  
+  context "rails" do
+    before :each do
+      Rails = {:foo => 'bar'}
+    end
+
+    it "should allow templates to use Rails instead of ::Rails" do
+      Paste::Test.write 'foo.js.erb', '<%= Rails[:foo] %>'
+      subject.render_all_erb
+      
+      subject.erb_path('foo.js').should have_contents('bar')
     end
   end
 end

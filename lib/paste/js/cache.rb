@@ -15,6 +15,7 @@ module Paste
       end
 
       def rebuild_if &blk
+        render_all_erb
         results.each_pair do |result, sources|
           begin
             write_result result if blk.call(result, sources[:sources])

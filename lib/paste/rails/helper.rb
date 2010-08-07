@@ -6,9 +6,9 @@ module Paste
 
         return if @javascripts.empty?
 
-        Paste::Rails.glue.paste *@javascripts
+        results = Paste::Rails.glue.paste *@javascripts
 
-        javascript_include_tag *javascripts
+        javascript_include_tag *results
       end
 
       def include_javascripts *javascripts
@@ -23,6 +23,7 @@ module Paste
 
       alias :include_javascript :include_javascripts
       alias :include_js :include_javascripts
+      alias :javascript :include_javascripts
     end
   end
 end

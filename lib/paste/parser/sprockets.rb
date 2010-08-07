@@ -1,6 +1,4 @@
-require 'sprockets/environment'
-require 'sprockets/secretary'
-require 'sprockets/source_file'
+require 'sprockets'
 
 module Paste
   module Parser

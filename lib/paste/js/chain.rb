@@ -10,16 +10,14 @@ module Paste
           source_deps  = results[result_name([source])][:parser].dependencies
           dependencies = dependencies | source_deps
         end
-        dependencies.map! do |d| 
+
+        dependencies.map do |d| 
+          result = result_name [d]
           register [d] unless registered? [d] # implicit dependencies
-          result_name [d]
-        end
+          write_result result if needs_update?(result)
 
-        dependencies.each do |dep|
-          write_result dep if needs_update?(dep)
+          result
         end
-
-        dependencies
       end
 
       def write_result result

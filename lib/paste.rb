@@ -37,8 +37,9 @@ end
 Paste::JS.configure do |config|
   config.root        = Dir.pwd
   config.destination = 'public/javascripts'
-  config.tmp_path    = 'tmp'
-  config.erb_path    = 'tmp/erb'
+  config.load_path   = ['app/javascripts']
+  config.tmp_path    = 'tmp/paste-cache'
+  config.erb_path    = 'tmp/paste-cache/erb'
   config.cache_file  = 'sprockets.yml'
   config.parser      = Paste::Parser::Sprockets
 end
