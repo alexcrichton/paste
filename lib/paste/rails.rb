@@ -4,7 +4,9 @@ module Paste
     autoload :Helper, 'paste/rails/helper'
     
     class << self
-      attr_accessor_with_default :glue, lambda { Paste::JS::Unify.new }
+      attr_accessor_with_default :glue do
+        Paste::JS::Unify.new
+      end
     end
   end
 end

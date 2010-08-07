@@ -1,29 +1,35 @@
+require 'active_support/file_update_checker'
+
 module Paste
   module JS
     module ERBRenderer
 
       def render_all_erb
-        load_path.each do |path|
-          Dir[path + '/**/*.js.erb'].each do |erb|
-            render_erb erb.gsub(path + '/', '')
-          end
-        end
+        erb_sources.each { |s| render_erb s }
       end
 
       def render_erb source
-        relative    = source.sub(/\.erb$/, '')
-        to_generate = erb_path relative
+        to_generate = erb_path source.sub(/\.erb$/, '')
         source      = find source
 
-        if !File.existsneeds_update? to_generate, File.mtime(source)
+        if !File.exists?(to_generate) || 
+            File.mtime(source) > File.mtime(to_generate)
+
           FileUtils.mkdir_p File.dirname(to_generate)
           contents = Helper.new(File.read(source)).result
           File.open(to_generate, 'w') { |f| f << contents }
         end
       end
 
-      def render_erb_if source, &block
-        
+      protected
+      
+      def erb_sources
+        sources = load_path.map do |path|
+          Dir[path + '/**/*.js.erb'].map do |erb|
+            erb.gsub(path + '/', '')
+          end
+        end
+        sources.flatten
       end
 
       class Helper < ERB

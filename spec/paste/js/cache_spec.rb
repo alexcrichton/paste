@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Paste::JS::Unify, 'building cached sprockets' do
+describe Paste::JS::Unify, 'building cached concatenations' do
 
   before :each do
     Paste::Test.write 'foo', 'foo()'
@@ -14,17 +14,17 @@ describe Paste::JS::Unify, 'building cached sprockets' do
   it "should rebuild within the same instance of the unifier" do
     subject.rebuild!
 
-    subject.should have_in_sprocket(@result, "foo()\nbar()\nbaz()")
+    subject.should have_in_result(@result, "foo()\nbar()\nbaz()")
   end
 
   it "should allow another watcher to rebuild it" do
     subject = Paste::JS::Unify.new
     subject.rebuild!
 
-    subject.should have_in_sprocket(@result, "foo()\nbar()\nbaz()")
+    subject.should have_in_result(@result, "foo()\nbar()\nbaz()")
   end
 
-  it "should rebuild pre-existing sprockets despite modification times" do
+  it "should rebuild pre-existing results despite modification times" do
     # Make the file exist and have the last modified time of the sources
     # to be previous to now
     subject.paste('foo', 'bar', 'foo/baz')
@@ -34,10 +34,10 @@ describe Paste::JS::Unify, 'building cached sprockets' do
 
     subject.rebuild!
 
-    subject.should have_in_sprocket(@result, "foo2()\nbar2()\nbaz2()")
+    subject.should have_in_result(@result, "foo2()\nbar2()\nbaz2()")
   end
 
-  it "should ignore cached sprockets which no longer exist" do
+  it "should ignore cached results which no longer exist" do
     Paste::Test.delete_source 'foo'
     Paste::Test.delete_source 'bar'
 

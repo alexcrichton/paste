@@ -25,7 +25,7 @@ module Paste
       end
 
       rake_tasks do
-        load 'paste/tasks/sprockets_packager.rake'
+        load 'paste/tasks/paste.rake'
       end
   
     end

@@ -10,15 +10,15 @@ def failed_not_contains_message file, contents
   msg
 end
 
-RSpec::Matchers.define :have_in_sprocket do |sprocket, contents|
-  sprocket += '.js' unless sprocket.end_with?('.js')
+RSpec::Matchers.define :have_in_result do |result, contents|
+  result += '.js' unless result.end_with?('.js')
 
   match do |glue|
-    File.join(glue.destination, sprocket).should have_contents(contents)
+    File.join(glue.destination, result).should have_contents(contents)
   end
   
   failure_message do |glue|
-    failed_not_contains_message File.join(glue.destination, sprocket), contents
+    failed_not_contains_message File.join(glue.destination, result), contents
   end
 end
 

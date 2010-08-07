@@ -5,7 +5,6 @@ module Paste
     extend Resolver
 
     include ActiveSupport::Configurable
-    include NeedsUpdate
     include Resolver
     include JS::ERBRenderer
     

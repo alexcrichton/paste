@@ -65,7 +65,6 @@ describe Paste::JS::Base do
     end
     
     it "should not regenerate the file if the source was not modified" do
-      # File is modified before the original one
       Paste::Test.write 'foo.js.erb', 'foobar', Time.now - 42
       subject.render_all_erb
       

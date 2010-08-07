@@ -9,35 +9,35 @@ describe Paste do
   end
 
   describe Paste::JS::Unify do    
-    it "should generate only one sprocket" do
-      sprockets = subject.paste 'foo', 'bar', 'foo/baz'
+    it "should generate only one result" do
+      results = subject.paste 'foo', 'bar', 'foo/baz'
 
-      sprockets.size.should == 1
+      results.size.should == 1
     end
     
-    it "should generate the same sprocket for different forms of the input" do
-      sprockets = subject.paste 'foo', 'bar', 'foo/baz'
+    it "should generate the same results for different forms of the input" do
+      results = subject.paste 'foo', 'bar', 'foo/baz'
 
-      sprockets.should == subject.paste('foo', 'foo/baz.js', 'bar.js')
-      sprockets.should == subject.paste('bar', 'foo.js', 'foo/baz')
+      results.should == subject.paste('foo', 'foo/baz.js', 'bar.js')
+      results.should == subject.paste('bar', 'foo.js', 'foo/baz')
     end
     
     it "should generate the concatenation when the destination doesn't exist" do
-      sprocket = subject.paste('foo', 'bar', 'foo/baz')[0]
+      result = subject.paste('foo', 'bar', 'foo/baz').first
 
-      subject.should have_in_sprocket(sprocket, "foo()\nbar()\nbaz()")
+      subject.should have_in_result(result, "foo()\nbar()\nbaz()")
     end
     
-    it "should rebuild the sprockets after the file has been removed" do
-      sprocket = subject.paste('foo', 'bar', 'foo/baz')[0]
+    it "should rebuild the results after the file has been removed" do
+      result = subject.paste('foo', 'bar', 'foo/baz').first
 
-      Paste::Test.delete sprocket
+      Paste::Test.delete result
       subject.paste('foo', 'bar', 'foo/baz')
 
-      subject.should have_in_sprocket(sprocket, "foo()\nbar()\nbaz()")
+      subject.should have_in_result(result, "foo()\nbar()\nbaz()")
     end
     
-    it "should raise a descriptive exception when the sprocket doesn't exist" do
+    it "should raise a descriptive exception when the source doesn't exist" do
       lambda { 
         subject.paste 'random' 
       }.should raise_error(/source random/i)
@@ -45,24 +45,24 @@ describe Paste do
 
     describe "regenerating files" do
       it "should occur if any file is changed" do
-        sprocket = subject.paste('foo', 'bar')[0]
+        result = subject.paste('foo', 'bar').first
 
         Paste::Test.write 'foo', 'foobar()', Time.now + 42
         subject.paste('foo', 'bar')
 
-        subject.should have_in_sprocket(sprocket, "foobar()\nbar()")
+        subject.should have_in_result(result, "foobar()\nbar()")
       end
 
       it "should not occur if no files have changed" do
-        sprocket = subject.paste('foo', 'bar')[0]
+        result = subject.paste('foo', 'bar').first
 
         Paste::Test.write 'foo', 'foobar', Time.now - 42
         subject.paste('foo', 'bar')
 
-        subject.should have_in_sprocket(sprocket, "foo()\nbar()")
+        subject.should have_in_result(result, "foo()\nbar()")
       end
       
-      it "should update the registered sprockets only if they have changed" do
+      it "should update the results only if the source have changed" do
         subject = described_class.new
 
         result1 = subject.paste('foo').first
@@ -72,53 +72,38 @@ describe Paste do
 
         subject.rebuild
 
-        subject.should have_in_sprocket(result1, 'foo()')
-        subject.should have_in_sprocket(result2, "barbar()\nbaz()")
+        subject.should have_in_result(result1, 'foo()')
+        subject.should have_in_result(result2, "barbar()\nbaz()")
       end
     end
   end
   
   describe Paste::JS::Chain do
-    it "should return the sprockets given" do
-      sprockets = subject.paste 'foo', 'bar', 'foo/baz'
+    it "should return the sources given" do
+      results = subject.paste 'foo', 'bar', 'foo/baz'
 
-      sprockets.should == ['foo.js', 'bar.js', 'foo/baz.js']
+      results.should == ['foo.js', 'bar.js', 'foo/baz.js']
     end
     
     it "should generate the concatenation when the destination doesn't exist" do
       subject.paste('foo', 'bar', 'foo/baz')
   
-      subject.should have_in_sprocket('foo', 'foo()')
-      subject.should have_in_sprocket('bar', 'bar()')
-      subject.should have_in_sprocket('foo/baz', 'baz()')
+      subject.should have_in_result('foo', 'foo()')
+      subject.should have_in_result('bar', 'bar()')
+      subject.should have_in_result('foo/baz', 'baz()')
     end
     
-    it "should return the sprockets with dependencies satisfied" do
-      # Sprockets are smart apparently, have to have at least one line in file
-      Paste::Test.write 'foo', <<-EOF
-//= require <foo/bar>
-//= require <bar>
-ignored_line()
-EOF
-      Paste::Test.write 'bar', <<-EOF
-//= require <foo/bar>
-ignored_line()
-EOF
-      Paste::Test.write 'foo/bar', 'ignored_line()'
+    it "should return the sources with dependencies satisfied" do
+      Paste::Test.write 'foo', "//= require <foo/bar>\n//= require <bar>"
+      Paste::Test.write 'bar', '//= require <foo/bar>'
+      Paste::Test.write 'foo/bar', 'foobar()'
   
       subject.paste('foo', 'bar', 'foo/bar').should == ['foo/bar.js', 'bar.js', 'foo.js']
     end
     
     it "should raise an exception on circular dependencies" do
-      # Sprockets are smart apparently, have to have at least one line in file
-      Paste::Test.write 'foo', <<-EOF
-//= require <bar>
-ignored_line()
-EOF
-      Paste::Test.write 'bar', <<-EOF
-//= require <foo>
-ignored_line()
-EOF
+      Paste::Test.write 'foo', '//= require <bar>'
+      Paste::Test.write 'bar', '//= require <foo>'
 
       lambda {
         subject.paste('foo', 'bar')
@@ -134,12 +119,12 @@ EOF
   
         subject.paste('foo', 'bar', 'foo/baz')
   
-        subject.should have_in_sprocket('foo', 'foo()')
-        subject.should have_in_sprocket('bar', 'bar(bar)')
-        subject.should have_in_sprocket('foo/baz', 'baz()')
+        subject.should have_in_result('foo', 'foo()')
+        subject.should have_in_result('bar', 'bar(bar)')
+        subject.should have_in_result('foo/baz', 'baz()')
       end
       
-      it "should update the registered sprockets only if they have changed" do
+      it "should update the results only if the sources have changed" do
         subject = described_class.new
 
         subject.paste('foo')
@@ -149,8 +134,8 @@ EOF
 
         subject.rebuild
 
-        subject.should have_in_sprocket('foo', 'foo()')
-        subject.should have_in_sprocket('bar', 'barbar()')
+        subject.should have_in_result('foo', 'foo()')
+        subject.should have_in_result('bar', 'barbar()')
       end
     end
   end

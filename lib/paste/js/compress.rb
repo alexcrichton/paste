@@ -43,7 +43,7 @@ module Paste
         if req.is_a? Net::HTTPSuccess
           File.open(file, 'w') { |f| f << req.body.chomp }
         else
-          raise "Google couldn't compile #{sprocket}!"
+          raise "Google couldn't compile #{result}!"
         end
 
       end

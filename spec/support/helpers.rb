@@ -14,28 +14,28 @@ module Paste
   module Test
     class << self
 
-      def write sprocket, contents, last_modified = Time.now
-        file = path sprocket
+      def write source, contents, last_modified = Time.now
+        file = path source
         FileUtils.mkdir_p File.dirname(file)
         File.open(file, 'w') { |f| f << contents }
 
-        touch sprocket, last_modified
+        touch source, last_modified
       end
 
-      def touch sprocket, modified_time = Time.now
-        File.utime Time.now, modified_time, path(sprocket)
+      def touch source, modified_time = Time.now
+        File.utime Time.now, modified_time, path(source)
       end
 
-      def path sprocket
-        return sprocket if sprocket.to_s[0...1] == '/'
+      def path source
+        return source if source.to_s[0...1] == '/'
 
-        file = File.join(Paste::JS::Base.load_path.first, sprocket)
+        file = File.join(Paste::JS::Base.load_path.first, source)
         file += '.js' unless file.end_with?('.js') || file.end_with?('.erb')
         file
       end
 
-      def delete sprocket
-        file = File.join(Paste::JS::Base.destination, sprocket)
+      def delete result
+        file = File.join(Paste::JS::Base.destination, result)
         file += '.js' unless file.end_with?('.js')
 
         File.delete(file)

@@ -20,10 +20,7 @@ module Paste
         path = destination result
         FileUtils.mkdir_p File.dirname(path)
 
-        if needs_update?(result)
-          results[result][:parser].reset!
-        end
-
+        results[result][:parser].reset!
         results[result][:parser].concatenation.save_to path
       end
 

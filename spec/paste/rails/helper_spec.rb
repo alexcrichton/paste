@@ -13,20 +13,20 @@ describe Paste::Rails::Helper do
     @helper.included_javascripts.should == ['foobar']
   end
   
-  it "should allow multiple sprockets to be included at once" do
+  it "should allow multiple sources to be included at once" do
     @helper.include_javascripts 'foo', 'bar'
     
     @helper.included_javascripts.should == ['foo', 'bar']
   end
   
-  it "shouldn't allow multiple sprockets to be in the list" do
+  it "shouldn't allow multiple sources to be in the list" do
     @helper.include_javascripts 'foo', 'bar'
     @helper.include_javascript 'foo'
 
     @helper.included_javascripts.should == ['foo', 'bar']
   end
   
-  it "should sprocketize the sprockets when asked for" do
+  it "should paste the sources when asked for" do
     @helper.stub(:javascript_include_tag)
     @glue = mock(Paste::Glue)
     Paste::Rails.stub(:glue).and_return(@glue)
