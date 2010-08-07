@@ -30,7 +30,7 @@ module Paste
       rake_tasks do
         load 'paste/tasks/paste.rake'
       end
-  
+
     end
   end
 end

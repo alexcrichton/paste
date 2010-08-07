@@ -2,6 +2,7 @@ require 'active_support/concern'
 require 'active_support/core_ext/object/blank'
 require 'active_support/core_ext/module/aliasing'
 require 'active_support/core_ext/module/attr_accessor_with_default'
+require 'active_support/core_ext/module/delegation'
 
 module Paste
 
@@ -20,15 +21,11 @@ module Paste
     autoload :ERBRenderer, 'paste/js/erb_renderer'
     autoload :Unify,       'paste/js/unify'
 
-    def self.configure &blk
-      Paste::JS::Base.configure &blk
-    end
-
-    def self.config
-      Paste::JS::Base.config
+    class << self
+      delegate :configure, :config, :to => Base
     end
   end
-  
+
   module Parser
     autoload :Sprockets, 'paste/parser/sprockets'
   end
