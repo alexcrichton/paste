@@ -34,7 +34,7 @@ module Paste
       path = (load_path + ['']).detect do |path|
         File.exists? File.join(path, source)
       end
-``
+
       raise ResolveError, "Source #{source} couldn't be found!" if path.nil?
 
       File.join(path, source)
