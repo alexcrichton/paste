@@ -5,7 +5,7 @@ module Paste
   module Resolver
 
     def resolve path
-      if File.exists?(path) || path.bytes.first == ?/
+      if File.exists?(path) || path.bytes.first == '/'.bytes.first
         File.expand_path path
       else
         File.join config.root, path
