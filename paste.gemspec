@@ -19,7 +19,6 @@ Gem::Specification.new do |s|
 
   s.add_dependency 'activesupport', ['>= 3.0.0.beta4']
   s.add_dependency 'sprockets'
-  s.add_dependency 'haml'
 
   s.add_development_dependency 'rspec', ['>= 2.0.0.beta.19']
 end

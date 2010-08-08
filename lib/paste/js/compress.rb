@@ -45,7 +45,6 @@ module Paste
         else
           raise "Google couldn't compile #{result}!"
         end
-
       end
 
     end

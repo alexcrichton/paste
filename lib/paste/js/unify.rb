@@ -13,7 +13,10 @@ module Paste
           write_result result
         end
 
-        [result]
+        {
+          :javascript => [result], 
+          :css        => results[result][:parser].css_dependencies
+        }
       end
 
       def write_result result

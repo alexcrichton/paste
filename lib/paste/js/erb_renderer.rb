@@ -1,4 +1,4 @@
-require 'active_support/file_update_checker'
+require 'erb'
 
 module Paste
   module JS

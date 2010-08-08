@@ -1,7 +1,6 @@
 source 'http://rubygems.org'
 
 gem 'sprockets'
-gem 'haml'
 gem 'paste', :path => '.'
 
 group :test do

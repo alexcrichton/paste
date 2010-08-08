@@ -3,7 +3,6 @@ PATH
   specs:
     paste (0.0.1)
       activesupport (>= 3.0.0.beta4)
-      haml
       sprockets
 
 GEM
@@ -11,7 +10,6 @@ GEM
   specs:
     activesupport (3.0.0.rc)
     diff-lcs (1.1.2)
-    haml (3.0.15)
     rspec (2.0.0.beta.19)
       rspec-core (= 2.0.0.beta.19)
       rspec-expectations (= 2.0.0.beta.19)
@@ -26,7 +24,6 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  haml
   paste!
   rspec (>= 2.0.0.beta.19)
   sprockets

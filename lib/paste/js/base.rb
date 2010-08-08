@@ -4,6 +4,10 @@ module Paste
 
       include Cache
       include Compress
+      
+      def initialize
+        config.load_path << erb_path
+      end
 
       def paste *sources
         raise 'Implement me!'
