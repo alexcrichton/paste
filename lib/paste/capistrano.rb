@@ -1,7 +1,7 @@
 Capistrano::Configuration.instance(true).load do
   after 'deploy:setup', 'paste:create_cache'
   after 'deploy:update_code', 'paste:link_cache'
-  after 'deploy:update_code', 'paste:rebuild'
+  before 'deploy:symlink', 'paste:rebuild'
 
   namespace :paste do
     desc "Rebuild javascripts and such"
