@@ -5,12 +5,11 @@ require 'active_support/core_ext/module/attr_accessor_with_default'
 require 'active_support/core_ext/module/delegation'
 
 module Paste
-  VERSION = '0.0.1'
-  
   autoload :Glue,        'paste/glue'
   autoload :NeedsUpdate, 'paste/needs_update'
   autoload :Rails,       'paste/rails'
   autoload :Resolver,    'paste/resolver'
+  autoload :VERSION,     'paste/version'
 
   module JS
     autoload :Base,        'paste/js/base'

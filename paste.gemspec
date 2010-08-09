@@ -1,8 +1,9 @@
 # -*- encoding: utf-8 -*-
+require File.dirname(__FILE__) + '/lib/paste/version'
 
 Gem::Specification.new do |s|
   s.name    = 'paste'
-  s.version = '0.0.1'
+  s.version = Paste::VERSION
 
   s.authors               = ['Alex Crichton']
   s.date                  = Date.today
