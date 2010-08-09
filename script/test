@@ -10,7 +10,7 @@ ENV['GEM_HOME']    = destination
 ENV['GEM_PATH']    = destination
 ENV['BUNDLE_PATH'] = destination
 
-Bundler::CLI.start ['install', "--gemfile=#{root}/Gemfile", destination]
+Bundler::CLI.start ['install', "--gemfile=#{root}/Gemfile", '--path', destination]
 
 Bundler.setup :default, :test
 
