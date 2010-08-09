@@ -21,9 +21,9 @@ module Paste
 
           # We want this serving to be at the very front
           config.app_middleware.insert_before Rack::Runtime,
-              ::Rack::Static, 
+              ::Rack::Static,
               :urls => ['/javascripts'],
-              :root => Paste::JS.tmp_path
+              :root => File.dirname(Paste::JS::Base.destination)
         end
       end
 
