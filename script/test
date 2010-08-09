@@ -6,6 +6,7 @@ require 'bundler/cli'
 root        = File.expand_path('../..', __FILE__)
 destination = root + '/tmp'
 
+ENV.delete 'BUNDLE_GEMFILE'
 ENV['GEM_HOME']    = destination
 ENV['GEM_PATH']    = destination
 ENV['BUNDLE_PATH'] = destination
