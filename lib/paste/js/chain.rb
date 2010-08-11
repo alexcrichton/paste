@@ -7,9 +7,15 @@ module Paste
         css_dependencies = []
 
         sources.each do |source|
-          register [source] unless registered? [source]
-          source_deps  = results[result_name([source])][:parser].js_dependencies
-          js_dependencies = js_dependencies | source_deps
+          name = result_name [source]
+          if registered? [source]
+            results[name][:parser].reset! if needs_update? name
+          else
+            register [source] unless registered? [source]
+          end
+
+          source_deps  = results[name][:parser].js_dependencies
+          js_dependencies = source_deps | js_dependencies# | source_deps
         end
 
         js_dependencies = js_dependencies.map do |d| 

@@ -52,11 +52,11 @@ module Paste
       def results
         return @results if defined?(@results)
         @results = Hash.new { {} }
-        
+
         (YAML.load_file tmp_path(config.cache_file) rescue []).each do |sources|
           register sources
         end
-        
+
         @results
       end
 
