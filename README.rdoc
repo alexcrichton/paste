@@ -1,53 +1,48 @@
-Sprockets for Rails 3
-=================
+= Paste
 
-This gem lets you make use of [Sprockets](http://github.com/sstephenson/sprockets).
+This gem simplifies dependencies between javascript and easily allows requiring of javascript.
 
-## Installing
+== Installing
 
-In your Gemfile: `gem 'sprockets-packager'`
+In your Gemfile: <tt>gem 'paste'</tt>
 
-Then, `bundle install`
+Then, <tt>bundle install</tt>
 
-## Usage
-Read up on how [Sprockets](http://github.com/sstephenson/sprockets) works to start taking advantage of it.
-
-Put all of your javascript files in `app/javascripts`. You can even make erb javascript files to interpolate constants and such.
+== Usage
+Put all of your javascript files in +app/javascripts+. You can even make erb javascript files to interpolate constants and such.
 
 Now in your views, whenever you need javascript, just call
-
-		<% include_sprocket 'foobar' %>
-
-or
-		
-		<% include_sprockets 'foo/bar', 'foo', 'baz' %>
+  <% javascript 'some/javascript/file' %>
+  <% css 'some/css/file' %>
+or	
+  <% javascript 'foo/bar', 'foo', 'baz' %>
 		
 And then in your layout file,
 
-		<%= sprockets_include_tag %>
+  <%= paste_js_tags %>
+  <%= paste_css_tags %>
 
-And that's it! As long as you've got your dependencies in your JS managed all right, the sprockets themselves will be automatically generated for you
+And that's it!
 
-I would recommend you add `public/javascripts/*` to your gitignore. I find it silly to check in generated files anyway.
+I would recommend you add <tt>public/javascripts/*</tt> to the ignore list of your VCS.
 
-### Environments (default behavior)
-#### Production
-In production, whenever `sprockets_include_tag` is called, the unique filename is generated, and if the file does not exist, it is generated via `Sprockets::Secretary`.  
-Subsequent calls to `sprockets_include_tag` will never update the generated sprocket, and there is no other way that the sprocket will be generated.
+== Behaviour
 
-For deployment, you probably don't want the first request to every page spend time rebuild the sprocket for that page. This gem caches all of the built sprockets to the file `tmp/sprockets-cache/sprockets.yml`. You probably want to symlink the entire directory to your deployment, but you can also just symlink this file.
+Paste uses +stylesheet_link_tag+ with a +:cache+ option set to a hash of the included CSS files. Normally this means that in production all CSS is concatenated into one file.
 
-You then need to run the `rake sprockets:rebuild` before your deployment goes live to rebuild everything
+=== Production
+For a Rails app, in production, <tt>Paste::JS::Unify</tt> is used to concatenate javascript. This means that +paste_js_tags+ will output only one tag. This tag will have the concatenation of all javascript required, including all of the dependencies (in the correct order).
 
-#### Development
-Here, whenever `sprockets_include_tag` is called, the files are examined and the dependency tree is determined. The files are then included in the order which satisfies the dependency tree.  
-Every request will trigger a refresh of the generated files in addition to them being generated when `sprockets_include_tag` is called.
+This is not compressed originally because it's generated on the fly. A cache file is written, however, so on a re-deploy you can rebuild all of the previously generated concatenations and Google's closure compiler is used for compression.
 
-## Example
+=== Development
+For a Rails app in development, +Paste::JS::Chain+ is used to paste javascripts together. This paster simply takes the list of javascripts and determines the dependencies and then generates a separate tag for each javascript file. This proves useful for debugging.
 
-Assume that `app/javascripts/jquery.js` exists and we have these files:
+== Example
 
-### app/javascripts/foo.js
+Assume that +app/javascripts/jquery.js+ exists and we have these files:
+
+==== app/javascripts/foo.js
 
 		//= require <jquery>
 		//= require <foo/bar>
@@ -56,40 +51,58 @@ Assume that `app/javascripts/jquery.js` exists and we have these files:
 			$('#foo').fadeIn().html($['BAR_VALUE']);
 		});
 
-### app/javascripts/foo/bar.js.erb
+==== app/javascripts/foo/bar.js.erb
 
 		//= require <jquery>
 
 		$['BAR_VALUE'] = <%= Bar::BAR_VALUE %>;
 
-### app/views/foo/index.html.erb
+==== app/views/foo/index.html.erb
 		
-		<% include_sprocket 'foo' %>
+    <% javascript 'foo' %>
+    <% css 'foo' %>
 		
 		<div id='bar'>
 			And the bar value for today is: <div id='foo'></div>
 		</div>
 
-And as long as your template has `<%= sprockets_include_tag %>`, the right javascript concatenation will be generated for you.	
+For this example, whenever +foo/index.html.erb+ is rendered, the stylesheet +public/stylesheets/foo+ will be included and so will both +app/javascripts/foo.js+ and +app/javascripts/bar.js.erb+ with +bar+ before +foo+.
 
-See configuration below for details, but if `:expand_includes` is true, then `sprockets_include_tag` is equivalent to `javascript_include_tag 'jquery', 'foo/bar', 'foo'`.  
-Otherwise, if `:expand_includes` is false, the three files will be concatenated into a file with a unique name, and it will be the only one served on the page
+== Configuration
 
-## Configuration
+You can configure paste through +Paste::CSS.configure+ or +Paste::JS.configure+. The following are recognized options:
+  
+  # These options are read by both Paste::JS and Paste::CSS
+  Paste::Glue.configure do |config|
+    config.root     # the root directory (defaults to Rails.root or the pwd)
 
-You can configure the packager through `Sprockets::Packager.options`. The following are recognized options:
+    config.tmp_path # a temporary directory to use. Can be relative to the root
+                    # or it can be an absolute path. Default: 'tmp/paste-cache'
+  end
 
-* `:load_path` - an array of relative/absolute paths of where to load the sprockets from. Sprockets are interpreted as relative from any one of these paths. Default: `['app/javascripts']`
-* `:destination` - This is the destination of generated sprockets to go. Default: `'public/javascripts'`
-* `:root` - This is the root option passed to Sprockets::Secretary. Default: `Rails.root`
-* `:tmp_path` - This is the absolute/relative place to place any generated files like ERB templates. Default `'tmp/sprockets-cache'`
-* `:watch_changes` - Values as to whether to watch the file system for changes. If `true`, this will regenerate all necessary sprockets on each request. Default: `Rails.env.development?`
-* `:expand_includes` - Value as to whether to expand javascript includes or to compact them into one asset. Default: `Rails.env.development?`
-* `:serve_assets` - Value as to whether a Rack component should be installed to serve all static assets. This is useful for deployments on Heroku where the `public/` directory is not writeable. If this is used, the `:destination` is changed to `tmp/javascripts` and assets are served from there. Default: `false`
+  Paste::JS.configure do |config|
+    config.destination # relative or absolute path of where to put javascripts.
+                       # Default: 'public/javascripts'
+    
+    config.load_path   # The load path for javascripts. This is where to find
+                       # the source files. Default: ['app/javascripts']
+    
+    config.erb_path    # relative or absolute path of where to generate the
+                       # ERB results to. Default: 'tmp/paste-cache/erb'
+    
+    config.cache_file  # The cache file for when pastes are made. This allows
+                       # the same pastes to be persisted through deployments
+                       # without regenerating on the first request. This is
+                       # a location relative to config.tmp_path
+                       # Default: sprockets.yml
+    
+    config.parser      # The parser class to use when determining dependencies
+                       # of javascripts. Default: Paste::Parser::Sprockets
+  end
 
 All configuration should be done in `config/application.rb` or `config/environments/*.rb`.
 
-## License
+== License
 
 Copyright &copy; 2009 Alex Crichton.
 

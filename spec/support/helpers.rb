@@ -61,12 +61,14 @@ module Paste
       'js'
     end
   end
-
-  module CSS::Test
-    extend TestBase
-
-    def self.extension
-      'css'
+  
+  module CSS
+    module Test
+      extend TestBase
+  
+      def self.extension
+        'css'
+      end
     end
   end
 end

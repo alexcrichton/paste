@@ -11,9 +11,6 @@ end
 
 Paste::JS.config.load_path  = ['js_sources']
 Paste::JS.config.destination  = 'destination'
-Paste::CSS.config.load_path = ['css_sources']
-Paste::CSS.config.destination  = 'destination'
-
 
 RSpec.configure do |c|
   c.color_enabled = true
