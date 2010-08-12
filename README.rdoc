@@ -9,7 +9,7 @@ In your Gemfile: <tt>gem 'paste'</tt>
 Then, <tt>bundle install</tt>
 
 == Usage
-Put all of your javascript files in +app/javascripts+. You can even make erb javascript files to interpolate constants and such.
+Put all of your javascript files in <tt>app/javascripts</tt>. You can even make erb javascript files to interpolate constants and such.
 
 Now in your views, whenever you need javascript, just call
   <% javascript 'some/javascript/file' %>
@@ -28,7 +28,7 @@ I would recommend you add <tt>public/javascripts/*</tt> to the ignore list of yo
 
 == Behaviour
 
-Paste uses +stylesheet_link_tag+ with a +:cache+ option set to a hash of the included CSS files. Normally this means that in production all CSS is concatenated into one file.
+Paste uses +stylesheet_link_tag+ with a <tt>:cache</tt> option set to a hash of the included CSS files. Normally this means that in production all CSS is concatenated into one file.
 
 === Production
 For a Rails app, in production, <tt>Paste::JS::Unify</tt> is used to concatenate javascript. This means that +paste_js_tags+ will output only one tag. This tag will have the concatenation of all javascript required, including all of the dependencies (in the correct order).
@@ -36,41 +36,41 @@ For a Rails app, in production, <tt>Paste::JS::Unify</tt> is used to concatenate
 This is not compressed originally because it's generated on the fly. A cache file is written, however, so on a re-deploy you can rebuild all of the previously generated concatenations and Google's closure compiler is used for compression.
 
 === Development
-For a Rails app in development, +Paste::JS::Chain+ is used to paste javascripts together. This paster simply takes the list of javascripts and determines the dependencies and then generates a separate tag for each javascript file. This proves useful for debugging.
+For a Rails app in development, <tt>Paste::JS::Chain</tt> is used to paste javascripts together. This paster simply takes the list of javascripts and determines the dependencies and then generates a separate tag for each javascript file. This proves useful for debugging.
 
 == Example
 
-Assume that +app/javascripts/jquery.js+ exists and we have these files:
+Assume that <tt>app/javascripts/jquery.js</tt> exists and we have these files:
 
 ==== app/javascripts/foo.js
 
-		//= require <jquery>
-		//= require <foo/bar>
+  //= require <jquery>
+  //= require <foo/bar>
 		
-		$(function() {
-			$('#foo').fadeIn().html($['BAR_VALUE']);
-		});
+  $(function() {
+    $('#foo').fadeIn().html($['BAR_VALUE']);
+  });
 
 ==== app/javascripts/foo/bar.js.erb
 
-		//= require <jquery>
+  //= require <jquery>
 
-		$['BAR_VALUE'] = <%= Bar::BAR_VALUE %>;
+  $['BAR_VALUE'] = <%= Bar::BAR_VALUE %>;
 
 ==== app/views/foo/index.html.erb
 		
-    <% javascript 'foo' %>
-    <% css 'foo' %>
+  <% javascript 'foo' %>
+  <% css 'foo' %>
 		
-		<div id='bar'>
-			And the bar value for today is: <div id='foo'></div>
-		</div>
+  <div id='bar'>
+    And the bar value for today is: <div id='foo'></div>
+  </div>
 
 For this example, whenever +foo/index.html.erb+ is rendered, the stylesheet +public/stylesheets/foo+ will be included and so will both +app/javascripts/foo.js+ and +app/javascripts/bar.js.erb+ with +bar+ before +foo+.
 
 == Configuration
 
-You can configure paste through +Paste::CSS.configure+ or +Paste::JS.configure+. The following are recognized options:
+The following are recognized options:
   
   # These options are read by both Paste::JS and Paste::CSS
   Paste::Glue.configure do |config|
@@ -100,11 +100,11 @@ You can configure paste through +Paste::CSS.configure+ or +Paste::JS.configure+.
                        # of javascripts. Default: Paste::Parser::Sprockets
   end
 
-All configuration should be done in `config/application.rb` or `config/environments/*.rb`.
+All configuration should be done in <tt>config/application.rb</tt> or <tt>config/environments/*.rb</tt>.
 
 == License
 
-Copyright &copy; 2009 Alex Crichton.
+Copyright 2009 Alex Crichton.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
