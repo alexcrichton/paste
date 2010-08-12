@@ -1,7 +1,6 @@
 require 'rubygems'
 require 'bundler/setup'
 
-require 'paste/version'
 require 'jeweler'
 
 Jeweler::Tasks.new do |gem|
@@ -15,10 +14,3 @@ Jeweler::Tasks.new do |gem|
   gem.add_bundler_dependencies
 end
 Jeweler::GemcutterTasks.new
-
-namespace :gem do
-  desc "Push the gem to rubygems.org"
-  task :push do
-    system "gem push pkg/paste-#{Paste::VERSION}.gem"
-  end
-end
