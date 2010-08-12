@@ -1,8 +1,6 @@
 require 'rubygems'
 require 'bundler/setup'
 
-Bundler.require :default, :test
-
 require 'fileutils'
 require 'rspec/core'
 require 'paste'
