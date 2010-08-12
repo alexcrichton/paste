@@ -19,6 +19,7 @@ GEM
       rubyforge (>= 2.0.0)
     json_pure (1.4.3)
     rake (0.8.7)
+    rcov (0.9.8)
     rspec (2.0.0.beta.19)
       rspec-core (= 2.0.0.beta.19)
       rspec-expectations (= 2.0.0.beta.19)
@@ -39,5 +40,6 @@ DEPENDENCIES
   jeweler
   paste!
   rake
+  rcov
   rspec (>= 2.0.0.beta.19)
   sprockets

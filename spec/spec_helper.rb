@@ -6,7 +6,7 @@ require 'rspec/core'
 require 'paste'
 
 Paste::Glue.configure do |config|
-  config.root        = File.dirname(__FILE__) + '/tmp'
+  config.root = File.expand_path('../tmp', __FILE__)
 end
 
 Paste::JS.config.load_path  = ['js_sources']
