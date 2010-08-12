@@ -2,7 +2,8 @@ require 'spec_helper'
 
 describe Paste::Glue, 'configuration' do
   it "should resolve absolute paths correctly" do
-    subject.resolve(__FILE__).should == __FILE__
+    absolute = File.expand_path(__FILE__)
+    subject.resolve(absolute).should == absolute
   end
 
   it "should resolve a non-absolute path relative to the specified root" do
