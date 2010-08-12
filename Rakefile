@@ -21,7 +21,7 @@ RSpec::Core::RakeTask.new(:spec)
 desc "Run all examples using rcov"
 RSpec::Core::RakeTask.new :rcov => :cleanup_rcov_files do |t|
   t.rcov = true
-  t.rcov_opts =  %[-Ilib -Ispec --exclude "gems/*,spec/spec_helper.rb,db/*,/Library/Ruby/*,config/*"]
+  t.rcov_opts =  %[-Ilib -Ispec --exclude "gems/*,spec/support,spec/paste,spec/spec_helper.rb,db/*,/Library/Ruby/*,config/*"]
   t.rcov_opts << %[--no-html --aggregate coverage.data]
 end
 

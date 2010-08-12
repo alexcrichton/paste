@@ -40,14 +40,5 @@ module Paste
       File.join(path, source)
     end
 
-    protected
-
-    def join path1, path2
-      if path2.blank?
-        path1
-      else
-        File.join path1, path2
-      end
-    end
   end
 end
