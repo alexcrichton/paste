@@ -13,6 +13,10 @@ Jeweler::Tasks.new do |gem|
   gem.homepage    = 'http://github.com/alexcrichton/paste'
 
   gem.add_bundler_dependencies
+  gem.files = FileList['lib/**/*.rb']
+  gem.files << 'VERSION'
+  gem.files << 'README.rdoc'
+  gem.test_files = []
 end
 Jeweler::GemcutterTasks.new
 

@@ -16,11 +16,7 @@ Gem::Specification.new do |s|
     "README.rdoc"
   ]
   s.files = [
-    ".gitignore",
-     "Gemfile",
-     "Gemfile.lock",
-     "README.rdoc",
-     "Rakefile",
+    "README.rdoc",
      "VERSION",
      "lib/paste.rb",
      "lib/paste/capistrano.rb",
@@ -38,40 +34,13 @@ Gem::Specification.new do |s|
      "lib/paste/rails/railtie.rb",
      "lib/paste/rails/updater.rb",
      "lib/paste/resolver.rb",
-     "lib/paste/tasks/paste.rake",
-     "lib/paste/version.rb",
-     "paste.gemspec",
-     "script/test",
-     "spec/paste/css/provides_spec.rb",
-     "spec/paste/js/cache_spec.rb",
-     "spec/paste/js/chain_spec.rb",
-     "spec/paste/js/compress_spec.rb",
-     "spec/paste/js/config_spec.rb",
-     "spec/paste/js/erb_spec.rb",
-     "spec/paste/js/unify_spec.rb",
-     "spec/paste/rails/helper_spec.rb",
-     "spec/spec_helper.rb",
-     "spec/support/helpers.rb",
-     "spec/support/matchers.rb"
+     "lib/paste/version.rb"
   ]
   s.homepage = %q{http://github.com/alexcrichton/paste}
   s.rdoc_options = ["--charset=UTF-8"]
   s.require_paths = ["lib"]
   s.rubygems_version = %q{1.3.7}
   s.summary = %q{JS and CSS dependency management}
-  s.test_files = [
-    "spec/paste/css/provides_spec.rb",
-     "spec/paste/js/cache_spec.rb",
-     "spec/paste/js/chain_spec.rb",
-     "spec/paste/js/compress_spec.rb",
-     "spec/paste/js/config_spec.rb",
-     "spec/paste/js/erb_spec.rb",
-     "spec/paste/js/unify_spec.rb",
-     "spec/paste/rails/helper_spec.rb",
-     "spec/spec_helper.rb",
-     "spec/support/helpers.rb",
-     "spec/support/matchers.rb"
-  ]
 
   if s.respond_to? :specification_version then
     current_version = Gem::Specification::CURRENT_SPECIFICATION_VERSION
