@@ -1,13 +1,14 @@
-source 'http://rubygems.org'
+source :rubygems
 
 gem 'sprockets'
 gem 'closure-compiler'
 gem 'paste', :path => '.'
 gem 'activesupport', '>= 3.0.0.beta4'
 
-group 'development' do
+group :development do
   gem 'jeweler'
   gem 'rake'
-  gem 'rcov'
+
+  gem 'rcov', :platforms => :ruby_18
   gem 'rspec', '>= 2.0.0.beta.19'
 end
