@@ -34,6 +34,7 @@ Gem::Specification.new do |s|
      "lib/paste/rails/railtie.rb",
      "lib/paste/rails/updater.rb",
      "lib/paste/resolver.rb",
+     "lib/paste/tasks/paste.rake",
      "lib/paste/version.rb"
   ]
   s.homepage = %q{http://github.com/alexcrichton/paste}

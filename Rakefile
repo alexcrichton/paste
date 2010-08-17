@@ -14,6 +14,7 @@ Jeweler::Tasks.new do |gem|
 
   gem.add_bundler_dependencies
   gem.files = FileList['lib/**/*.rb']
+  gem.files += FileList['lib/**/*.rake']
   gem.files << 'VERSION'
   gem.files << 'README.rdoc'
   gem.test_files = []
