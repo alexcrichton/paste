@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    paste (0.1.1)
+    paste (0.2.0)
       activesupport (>= 3.0.0.beta4)
       closure-compiler
       paste
