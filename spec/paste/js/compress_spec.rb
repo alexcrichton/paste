@@ -30,7 +30,8 @@ describe Paste::JS::Unify, 'compression' do
     result = subject.paste('foo', 'bar')[:javascript].first
     
     begin
-      subject.rebuild! :compress => 'google', :level => 'ADVANCED_OPTIMIZATIONS'
+      subject.rebuild! :compress => 'google', 
+                       :compilation_level => 'ADVANCED_OPTIMIZATIONS'
     rescue SocketError
       pending 'Error connecting to google'
     end

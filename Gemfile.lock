@@ -3,6 +3,7 @@ PATH
   specs:
     paste (0.1.1)
       activesupport (>= 3.0.0.beta4)
+      closure-compiler
       paste
       sprockets
 
@@ -10,6 +11,7 @@ GEM
   remote: http://rubygems.org/
   specs:
     activesupport (3.0.0.rc)
+    closure-compiler (0.3.2)
     diff-lcs (1.1.2)
     gemcutter (0.6.1)
     git (1.2.5)
@@ -37,6 +39,7 @@ PLATFORMS
 
 DEPENDENCIES
   activesupport (>= 3.0.0.beta4)
+  closure-compiler
   jeweler
   paste!
   rake

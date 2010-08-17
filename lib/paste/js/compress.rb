@@ -1,4 +1,5 @@
-require 'active_support/core_ext/hash/reverse_merge'
+require 'closure-compiler'
+require 'active_support/core_ext/hash/except'
 
 module Paste
   module JS
@@ -20,7 +21,7 @@ module Paste
       def compress result, options = {}
         case options[:compress]
           when 'google'
-            google_compress result, options
+            google_compress result, options.except(:compress)
           when nil, false
             # Compression not asked for
           else
@@ -31,20 +32,13 @@ module Paste
       protected
 
       def google_compress result, options = {}
-        file = destination result
-        uri  = URI.parse('http://closure-compiler.appspot.com/compile')
-        req  = Net::HTTP.post_form(uri,
-          :js_code           => File.read(file),
-          :compilation_level => options[:level] || 'SIMPLE_OPTIMIZATIONS', 
-          :output_format     => 'text', 
-          :output_info       => 'compiled_code'
-        )
-
-        if req.is_a? Net::HTTPSuccess
-          File.open(file, 'w') { |f| f << req.body.chomp }
-        else
-          raise "Google couldn't compile #{result}!"
+        file, output = destination(result), ''
+        handle = File.open(file, 'a+')
+        File.open(file, 'r') do |f|
+          output = Closure::Compiler.new(options).compile f
         end
+        
+        File.open(file, 'w+') { |f| f << output.chomp }
       end
 
     end
