@@ -9,7 +9,9 @@ module Paste
         sources.each do |source|
           name = result_name [source]
           if registered? [source]
-            results[name][:parser].reset! if needs_update? name
+            if needs_update?(name) || needs_dependency_update?(name)
+              results[name][:parser].reset! 
+            end
           else
             register [source]
           end
@@ -18,7 +20,7 @@ module Paste
           js_dependencies = source_deps | js_dependencies
         end
 
-        js_dependencies = js_dependencies.map do |d| 
+        js_dependencies.map! do |d|
           result = result_name [d]
           register [d] unless registered? [d] # implicit dependencies
           write_result result if needs_update?(result)

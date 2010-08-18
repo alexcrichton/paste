@@ -78,11 +78,11 @@ describe Paste::JS::Unify do
       Paste::JS::Test.write 'foo', "//= require <bar>\nfoo"
       Paste::JS::Test.write 'bar', 'bar'
       Paste::JS::Test.write 'baz', 'baz'
-      result = subject.paste('foo', 'bar', 'baz')[:javascript].first
+      result = subject.paste('foo')[:javascript].first
 
       Paste::JS::Test.write 'bar', "//= require <baz>\nbar", Time.now + 42
 
-      subject.paste('foo', 'bar', 'baz')
+      subject.paste('foo')
       
       subject.should have_in_result(result, "baz\nbar\nfoo")
     end

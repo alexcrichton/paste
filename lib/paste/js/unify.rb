@@ -9,7 +9,8 @@ module Paste
 
         register sources unless registered?(sources)
 
-        if needs_update?(result)
+        if needs_update?(result) || needs_dependency_update?(result)
+          results[result][:parser].reset! 
           write_result result
         end
 

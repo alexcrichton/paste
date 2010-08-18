@@ -41,11 +41,14 @@ module Paste
       end
 
       def needs_update? result
-        path = destination result
-        return true unless File.exists?(path) && results.key?(result)
+        needs_update_relative_to_sources result do
+          results[result][:sources]
+        end
+      end
 
-        results[result][:sources].inject(false) do |prev, source|
-          prev || File.mtime(path) < File.mtime(find(source))
+      def needs_dependency_update? result
+        needs_update_relative_to_sources result do
+          results[result][:parser].js_dependencies
         end
       end
 
@@ -67,6 +70,15 @@ module Paste
       end
 
       protected
+      
+      def needs_update_relative_to_sources result
+        path = destination result
+        return true unless File.exists?(path) && results.key?(result)
+
+        yield.inject(false) do |prev, source|
+          prev || File.mtime(path) < File.mtime(find(source))
+        end
+      end
 
       def write_cache_to_disk
         file = tmp_path config.cache_file

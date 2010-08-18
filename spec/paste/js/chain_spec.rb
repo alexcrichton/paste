@@ -70,11 +70,24 @@ describe Paste::JS::Chain do
       Paste::JS::Test.write 'foo', '//= require <bar>'
       Paste::JS::Test.write 'bar', ''
       Paste::JS::Test.write 'baz', ''
-      subject.paste 'foo', 'bar'
+      subject.paste('foo')
 
       Paste::JS::Test.write 'bar', '//= require <baz>', Time.now + 42
 
-      subject.paste('foo', 'bar')[:javascript].should == ['baz.js', 'bar.js', 'foo.js']
+      subject.paste('foo')[:javascript].should == ['baz.js', 'bar.js', 'foo.js']
+    end
+
+    it "should watch for changes in very deep dependencies" do
+      Paste::JS::Test.write 'foo', '//= require <bar>'
+      Paste::JS::Test.write 'bar', '//= require <baz>'
+      Paste::JS::Test.write 'baz', ''
+      Paste::JS::Test.write 'asdf', ''
+      subject.paste('foo')
+
+      Paste::JS::Test.write 'baz', '//= require <asdf>', Time.now + 42
+
+      subject.paste('foo')[:javascript].should == ['asdf.js', 'baz.js',
+          'bar.js', 'foo.js']
     end
   end
   
