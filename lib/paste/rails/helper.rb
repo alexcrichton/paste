@@ -17,7 +17,7 @@ module Paste
         include_css *other_css
 
         results = Paste::Rails.glue.paste *(@javascripts ||= [])
-        all_css = (results[:css] + other_css + @css).uniq
+        all_css = (results[:css] + @css).uniq
         
         cache = Digest::SHA1.hexdigest(all_css.sort.join)[0..12]
         all_css << {:cache => cache}

@@ -4,7 +4,7 @@ module Paste
 
       include Cache
       include Compress
-      
+
       def initialize
         config.load_path << erb_path
       end

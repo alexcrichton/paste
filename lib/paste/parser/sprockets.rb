@@ -30,7 +30,7 @@ module Paste
       end
 
       def reset!
-        @js_dependencies  = @css_dependencies = nil
+        @js_dependencies = @css_dependencies = nil
         secretary.reset!
       rescue ::Sprockets::LoadError => e
         raise ResolveError.new(e.message)

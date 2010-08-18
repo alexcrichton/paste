@@ -42,7 +42,7 @@ module Paste
 
       def needs_update? result
         path = destination result
-        return true unless File.exists?(path)
+        return true unless File.exists?(path) && registered?(result)
 
         results[result][:sources].inject(false) do |prev, source|
           prev || File.mtime(path) < File.mtime(find(source))

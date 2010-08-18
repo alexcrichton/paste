@@ -11,11 +11,11 @@ module Paste
           if registered? [source]
             results[name][:parser].reset! if needs_update? name
           else
-            register [source] unless registered? [source]
+            register [source]
           end
 
           source_deps  = results[name][:parser].js_dependencies
-          js_dependencies = source_deps | js_dependencies# | source_deps
+          js_dependencies = source_deps | js_dependencies
         end
 
         js_dependencies = js_dependencies.map do |d| 
