@@ -11,12 +11,7 @@ module Paste
       def initialize glue, sources
         @glue      = glue
         @sources   = sources
-        @secretary = ::Sprockets::Secretary.new(
-          :root         => glue.root, 
-          :expand_paths => false,
-          :load_path    => glue.load_path,
-          :source_files => sources.map{ |s| glue.find s }
-        )
+        reset!
       end
 
       def js_dependencies
@@ -31,7 +26,13 @@ module Paste
 
       def reset!
         @js_dependencies = @css_dependencies = nil
-        secretary.reset!
+
+        @secretary = ::Sprockets::Secretary.new(
+          :root         => glue.root, 
+          :expand_paths => false,
+          :load_path    => glue.load_path,
+          :source_files => @sources.map{ |s| glue.find s }
+        )
       rescue ::Sprockets::LoadError => e
         raise ResolveError.new(e.message)
       end

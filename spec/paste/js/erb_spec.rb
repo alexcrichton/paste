@@ -46,6 +46,18 @@ describe Paste::JS::Base do
 
         subject.paste('bar')
       end
+      
+      it "should watch for a file to be changed to an ERB file" do
+        Paste::JS::Test.write 'foo', 'foo'
+        result = subject.paste('foo')[:javascript]
+        result.each{ |p| Paste::JS::Test.delete p }
+        Paste::JS::Test.delete_source 'foo'
+
+        Paste::JS::Test.write 'foo.js.erb', '<%= "foo" %><%= "bar" %>'
+        subject.render_all_erb
+
+        subject.paste('foo')
+      end
     end
 
     describe Paste::JS::Chain do
