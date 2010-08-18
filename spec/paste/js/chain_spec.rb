@@ -70,11 +70,11 @@ describe Paste::JS::Chain do
       Paste::JS::Test.write 'foo', '//= require <bar>'
       Paste::JS::Test.write 'bar', ''
       Paste::JS::Test.write 'baz', ''
-      subject.paste 'foo', 'bar', 'baz'
+      subject.paste 'foo', 'bar'
 
       Paste::JS::Test.write 'bar', '//= require <baz>', Time.now + 42
 
-      subject.paste('foo', 'bar', 'baz')[:javascript].should == ['baz.js', 'bar.js', 'foo.js']
+      subject.paste('foo', 'bar')[:javascript].should == ['baz.js', 'bar.js', 'foo.js']
     end
   end
   

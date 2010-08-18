@@ -41,10 +41,10 @@ describe Paste::JS::Base do
     shared_examples_for 'an erb paster' do
       it "should use the generated ERB file when pasting" do
         Paste::JS::Test.write 'foo.js.erb', '<%= "foo" %><%= "bar" %>'
-        Paste::JS::Test.write 'bar', 'bar()'
+        Paste::JS::Test.write 'bar', "//= require <foo>\nbar()"
         subject.render_all_erb
 
-        subject.paste('foo', 'bar')
+        subject.paste('bar')
       end
     end
 
