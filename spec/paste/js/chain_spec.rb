@@ -77,17 +77,37 @@ describe Paste::JS::Chain do
       subject.paste('foo')[:javascript].should == ['baz.js', 'bar.js', 'foo.js']
     end
 
-    it "should watch for changes in very deep dependencies" do
+    it "should watch for changes in dependencies as well" do
       Paste::JS::Test.write 'foo', '//= require <bar>'
-      Paste::JS::Test.write 'bar', '//= require <baz>'
+      Paste::JS::Test.write 'bar', ''
       Paste::JS::Test.write 'baz', ''
-      Paste::JS::Test.write 'asdf', ''
       subject.paste('foo')
 
-      Paste::JS::Test.write 'baz', '//= require <asdf>', Time.now + 42
+      Paste::JS::Test.write 'bar', '//= require <baz>', Time.now + 42
 
-      subject.paste('foo')[:javascript].should == ['asdf.js', 'baz.js',
-          'bar.js', 'foo.js']
+      subject.paste('foo')[:javascript].should == ['baz.js', 'bar.js', 'foo.js']
+    end
+
+    it "should watch for changes in very deep dependencies" do
+      Paste::JS::Test.write 'foo', ''
+      Paste::JS::Test.write 'bar', ''
+      subject.paste('foo')
+
+      Paste::JS::Test.write 'foo', '//= require <bar>', Time.now + 42
+
+      subject.paste('foo')[:javascript].should == ['bar.js', 'foo.js']
+    end
+    
+    it "should update dependencies when they've been rewritten using rebuild" do
+      Paste::JS::Test.write 'foo', ''
+      Paste::JS::Test.write 'baz', 'foobar'
+
+      subject.paste('foo')
+      Paste::JS::Test.write 'foo', '//= require <baz>', Time.now + 42
+      subject.rebuild
+      Paste::JS::Test.touch 'foo', Time.now - 1
+
+      @result = subject.paste('foo')[:javascript].should == ['baz.js', 'foo.js']
     end
   end
   

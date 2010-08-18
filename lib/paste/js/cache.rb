@@ -18,7 +18,10 @@ module Paste
         render_all_erb
         results.each_pair do |result, sources|
           begin
-            write_result result if blk.call(result, sources[:sources])
+            if blk.call(result, sources[:sources])
+              sources[:parser].reset!
+              write_result result
+            end
           rescue ResolveError
             results.delete result
           end
