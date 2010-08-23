@@ -1,3 +1,5 @@
+require 'active_support/core_ext/module/synchronization'
+
 require 'yaml'
 
 module Paste
@@ -28,14 +30,16 @@ module Paste
         end
       end
 
-      def register sources
-        if results[result_name(sources)][:sources] != sources
-          results[result_name(sources)] = {
+      def register sources, into_hash = nil
+        into_hash ||= results
+
+        if into_hash[result_name(sources)][:sources] != sources
+          into_hash[result_name(sources)] = {
             :sources => sources,
             :parser  => config.parser.new(self, sources)
           }
 
-          write_cache_to_disk
+          write_cache_to_disk into_hash
         end
       end
 
@@ -57,6 +61,7 @@ module Paste
 
       def results
         return @results if defined?(@results)
+
         @results = Hash.new { {} }
 
         begin
@@ -66,14 +71,17 @@ module Paste
         end
 
         cached.each do |sources|
-          register sources
+          register sources, @results
         end
 
         @results
       end
 
+      @@results_lock = Mutex.new
+      synchronize :results, :with => :@@results_lock
+
       protected
-      
+
       def needs_update_relative_to_sources result
         path = destination result
         return true unless File.exists?(path) && results.key?(result)
@@ -83,12 +91,12 @@ module Paste
         end
       end
 
-      def write_cache_to_disk
+      def write_cache_to_disk cache
         file = tmp_path config.cache_file
         FileUtils.mkdir_p File.dirname(file)
 
         to_write = []
-        results.each do |result, hash|
+        cache.each do |result, hash|
           to_write << hash[:sources]
         end
 
