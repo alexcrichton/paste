@@ -13,6 +13,12 @@ Capistrano::Configuration.instance(true).load do
           "rake RAILS_ENV=#{env} paste:rebuild; echo ''"
     end
 
+    task :compress do
+      env = exists?(:rails_env) ? rails_env : 'production'
+      run "cd #{latest_release} && " +
+          "rake RAILS_ENV=#{env} paste:compress"
+    end
+
     desc "Create a directory for caching javascript and such"
     task :create_cache do
       run "mkdir -p #{shared_path}/paste-cache"
