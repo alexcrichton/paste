@@ -66,12 +66,13 @@ module Paste
 
         begin
           cached = YAML.load_file tmp_path(config.cache_file)
-        rescue
-          cached = []
-        end
 
-        cached.each do |sources|
-          register sources, @results
+          if cached
+            cached.each do |sources|
+              register sources, @results
+            end
+          end
+        rescue
         end
 
         @results
