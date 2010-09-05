@@ -18,10 +18,10 @@ module Paste
 
         results = Paste::Rails.glue.paste *(@javascripts ||= [])
         all_css = (results[:css] + @css).uniq
-        
+
         cache = Digest::SHA1.hexdigest(all_css.sort.join)[0..12]
         all_css << {:cache => cache} unless Paste::CSS.config.no_cache
-          
+
         stylesheet_link_tag *all_css
       end
 

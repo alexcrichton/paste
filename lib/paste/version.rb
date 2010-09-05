@@ -1,3 +1,3 @@
 module Paste
-  VERSION = File.read(File.expand_path('../../../VERSION', __FILE__))
+  VERSION = '0.2.1'
 end

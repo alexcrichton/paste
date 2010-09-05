@@ -1,25 +1,8 @@
 require 'rubygems'
 require 'bundler/setup'
 
-require 'jeweler'
 require 'rspec/core/rake_task'
-
-Jeweler::Tasks.new do |gem|
-  gem.name        = 'paste'
-  gem.authors     = ['Alex Crichton']
-  gem.description = 'Asset Management for Rails'
-  gem.summary     = 'JS and CSS dependency management'
-  gem.email       = ['alex@alexcrichton.com']
-  gem.homepage    = 'http://github.com/alexcrichton/paste'
-
-  gem.add_bundler_dependencies
-  gem.files = FileList['lib/**/*.rb']
-  gem.files += FileList['lib/**/*.rake']
-  gem.files << 'VERSION'
-  gem.files << 'README.rdoc'
-  gem.test_files = []
-end
-Jeweler::GemcutterTasks.new
+Bundler::GemHelper.install_tasks
 
 RSpec::Core::RakeTask.new(:spec)
 
