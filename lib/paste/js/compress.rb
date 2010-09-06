@@ -32,7 +32,7 @@ module Paste
       protected
 
       def has_java?
-        `java` && true rescue false
+        system 'java &> /dev/null'
       end
 
       def google_compress *args
