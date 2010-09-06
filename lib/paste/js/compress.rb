@@ -31,14 +31,41 @@ module Paste
 
       protected
 
-      def google_compress result, options = {}
+      def has_java?
+        `java` && true rescue false
+      end
+
+      def google_compress *args
+        has_java? ? google_compress_with_java(*args) :
+          google_compress_without_java(*args)
+      end
+
+      def google_compress_with_java result, options = {}
         file, output = destination(result), ''
         handle = File.open(file, 'a+')
         File.open(file, 'r') do |f|
           output = Closure::Compiler.new(options).compile f
         end
-        
+
         File.open(file, 'w+') { |f| f << output.chomp }
+      end
+
+      def google_compress_without_java result, options = {}
+        file = destination result
+        uri  = URI.parse('http://closure-compiler.appspot.com/compile')
+        req  = Net::HTTP.post_form(uri,
+          :js_code           => File.read(file),
+          :compilation_level => options[:compilation_level] ||
+            'SIMPLE_OPTIMIZATIONS',
+          :output_format     => 'text',
+          :output_info       => 'compiled_code'
+        )
+
+        if req.is_a? Net::HTTPSuccess
+          File.open(file, 'w') { |f| f << req.body.chomp }
+        else
+          raise "Google couldn't compile #{result}!"
+        end
       end
 
     end
