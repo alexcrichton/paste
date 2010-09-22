@@ -1,10 +1,6 @@
 source :rubygems
 
-gem 'paste', :path => '.'
-
-gem 'sprockets'
-gem 'closure-compiler'
-gem 'activesupport', '>= 3.0.0.beta4'
+gemspec
 
 group :development do
   gem 'rake'

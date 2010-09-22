@@ -5,7 +5,7 @@ require 'paste/version'
 Gem::Specification.new do |s|
   s.name     = 'paste'
   s.version  = Paste::VERSION
-  s.platform = Gem::Platform::RUBY  
+  s.platform = Gem::Platform::RUBY
 
   s.author           = 'Alex Crichton'
   s.homepage         = 'http://github.com/alexcrichton/paste'
@@ -19,7 +19,7 @@ Gem::Specification.new do |s|
   s.rdoc_options     = ['--charset=UTF-8']
   s.require_path     = 'lib'
 
-  s.add_runtime_dependency 'sprockets'
-  s.add_runtime_dependency 'closure-compiler'
-  s.add_runtime_dependency 'activesupport', '>= 3.0.0.beta4'
+  s.add_dependency 'sprockets'
+  s.add_dependency 'closure-compiler'
+  s.add_dependency 'activesupport', '>= 3.0.0.beta4'
 end
