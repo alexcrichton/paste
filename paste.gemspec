@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
-$LOAD_PATH << File.expand_path('../lib', __FILE__)
-require 'paste/version'
+
+require File.expand_path('../lib/paste/version', __FILE__)
 
 Gem::Specification.new do |s|
   s.name     = 'paste'
