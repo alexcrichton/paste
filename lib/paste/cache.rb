@@ -1,49 +1,34 @@
 require 'active_support/core_ext/module/synchronization'
-
 require 'yaml'
 
 module Paste
   module Cache
 
     def rebuild
-      rebuild_if do |result, sources|
-        needs_update? result
-      end
-    end
+      load_path.each do |path|
+        Dir[path + '/**/*.js'].each do |file|
+          relative = file.gsub path + '/', ''
 
-    def rebuild!
-      rebuild_if { |r, s| true }
-    end
-
-    def rebuild_if &blk
-      render_all_erb
-      results.each_pair do |result, sources|
-        begin
-          if blk.call(result, sources[:sources])
-            sources[:parser].reset!
-            write_result result
+          if needs_update? relative
+            result = File.join destination, relative
+            FileUtils.mkdir_p File.dirname(result)
+            FileUtils.cp file, result
           end
-        rescue ResolveError
-          results.delete result
         end
       end
     end
 
-    def register sources, into_hash = nil
+    def register source, into_hash = nil
       into_hash ||= results
 
-      if into_hash[result_name(sources)][:sources] != sources
-        into_hash[result_name(sources)] = {
-          :sources => sources,
-          :parser  => config.parser.new(self, sources)
-        }
-
-        # write_cache_to_disk into_hash
-      end
+      into_hash[source] ||= {
+        :source  => source,
+        :parser  => config.parser.new(self, source)
+      }
     end
 
-    def registered? sources
-      results.key? result_name(sources)
+    def registered? source
+      results.key? source
     end
 
     def needs_update? result
@@ -59,22 +44,7 @@ module Paste
     end
 
     def results
-      return @results if defined?(@results)
-
-      @results = Hash.new { {} }
-
-      begin
-        cached = YAML.load_file tmp_path(config.cache_file)
-
-        if cached
-          cached.each do |sources|
-            register sources, @results
-          end
-        end
-      rescue
-      end
-
-      @results
+      @results ||= {}
     end
 
     @@results_lock = Mutex.new
@@ -90,20 +60,6 @@ module Paste
         prev || File.mtime(path) < File.mtime(find(source))
       end
     end
-
-    # def write_cache_to_disk cache
-    #    file = tmp_path config.cache_file
-    #    FileUtils.mkdir_p File.dirname(file)
-    #
-    #    to_write = []
-    #    cache.each do |result, hash|
-    #      to_write << hash[:sources]
-    #    end
-    #
-    #    File.open(file, 'w') do |f|
-    #      f << YAML.dump(to_write)
-    #    end
-    #  end
 
   end
 end

@@ -8,7 +8,6 @@ module Paste
     include Resolver
     include ERBRenderer
     include Cache
-    include Compress
 
     def initialize
       config.js_load_path << erb_path
@@ -19,47 +18,35 @@ module Paste
       css_dependencies = []
 
       sources.each do |source|
-        name = result_name [source]
-        if registered? [source]
-          if needs_update?(name) || needs_dependency_update?(name)
-            results[name][:parser].reset!
+        source << '.js' unless source.end_with? '.js'
+
+        if registered? source
+          if needs_update?(source) || needs_dependency_update?(source)
+            results[source][:parser].reset!
           end
         else
-          register [source]
+          register source
         end
 
-        source_deps  = results[name][:parser].js_dependencies
+        source_deps  = results[source][:parser].js_dependencies
+        source_deps.each{ |s| s << '.js' unless s.end_with? '.js' }
         js_dependencies = source_deps | js_dependencies
       end
 
-      js_dependencies.map! do |d|
-        result = result_name [d]
-        register [d] unless registered? [d] # implicit dependencies
-        write_result result if needs_update?(result)
+      js_dependencies.each do |dep|
+        dep << '.js' unless dep.end_with? '.js'
+        register dep unless registered? dep # implicit dependencies
 
         css_dependencies = css_dependencies |
-            results[result][:parser].css_dependencies
+            results[dep][:parser].css_dependencies
 
-        result
+        dep
       end
 
       {
         :javascripts => js_dependencies,
         :stylesheets => css_dependencies
       }
-    end
-
-    def write_result result
-      file = destination result
-
-      FileUtils.mkdir_p File.dirname(file)
-      FileUtils.cp find(result), file
-    end
-
-    def result_name sources
-      result = sources.first
-      result += '.js' unless result.end_with?('.js')
-      result
     end
 
   end

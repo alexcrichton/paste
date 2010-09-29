@@ -4,13 +4,13 @@ module Paste
   module Parser
     class Sprockets
 
-      attr_reader :glue, :secretary, :sources
+      attr_reader :glue, :secretary, :source
 
       delegate :concatenation, :to => :secretary
 
-      def initialize glue, sources
+      def initialize glue, source
         @glue      = glue
-        @sources   = sources
+        @source    = source
         reset!
       end
 
@@ -28,10 +28,10 @@ module Paste
         @js_dependencies = @css_dependencies = nil
 
         @secretary = ::Sprockets::Secretary.new(
-          :root         => glue.root, 
+          :root         => glue.root,
           :expand_paths => false,
           :load_path    => glue.load_path,
-          :source_files => @sources.map{ |s| glue.find s }
+          :source_files => [glue.find(source)]
         )
       rescue ::Sprockets::LoadError => e
         raise ResolveError.new(e.message)
@@ -47,7 +47,7 @@ module Paste
       def generate_dependencies
         @js_dependencies  = []
         @css_dependencies = []
-        sources.each { |source| in_order_traversal source }
+        in_order_traversal source
       end
 
       def in_order_traversal source, current_path = []
@@ -56,7 +56,7 @@ module Paste
 
         current_path.push source
 
-        source_file = ::Sprockets::SourceFile.new environment, 
+        source_file = ::Sprockets::SourceFile.new environment,
             ::Sprockets::Pathname.new(environment, glue.find(source))
         css_deps = []
         source_file.source_lines.each do |line|
@@ -66,12 +66,12 @@ module Paste
             css_deps << line.css_require
           end
         end
-      
+
         @js_dependencies.push current_path.pop
         @css_dependencies = @css_dependencies | css_deps
       end
 
-    end    
+    end
   end
 end
 

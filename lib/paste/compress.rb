@@ -6,7 +6,7 @@ module Paste
     extend ActiveSupport::Concern
 
     included do
-      alias_method_chain :rebuild!, :compression
+      # alias_method_chain :rebuild!, :compression
     end
 
     def rebuild_with_compression! options = {}

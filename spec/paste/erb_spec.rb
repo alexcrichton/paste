@@ -30,13 +30,6 @@ describe Paste::Glue do
     subject.erb_path('foo.js').should_not exist
   end
 
-  it "should render when being rebuilt" do
-    Paste::Test.write 'foo.js.erb', 'foobar'
-    subject.rebuild!
-
-    subject.erb_path('foo.js').should have_contents('foobar')
-  end
-
   describe Paste::Glue, "pasting a variety of regular/erb files" do
     it "should use the generated ERB file when pasting" do
       Paste::Test.write 'foo.js.erb', '<%= "foo" %><%= "bar" %>'
@@ -48,8 +41,7 @@ describe Paste::Glue do
 
     it "should watch for a file to be changed to an ERB file" do
       Paste::Test.write 'foo', 'foo'
-      result = subject.paste('foo')[:javascripts]
-      result.each{ |p| Paste::Test.delete p }
+      subject.render_all_erb
       Paste::Test.delete_source 'foo'
 
       Paste::Test.write 'foo.js.erb', '<%= "foo" %><%= "bar" %>'
