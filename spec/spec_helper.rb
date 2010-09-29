@@ -5,18 +5,18 @@ require 'fileutils'
 require 'rspec/core'
 require 'paste'
 
-Paste::Glue.configure do |config|
+Paste.configure do |config|
   config.root = File.expand_path('../tmp', __FILE__)
 end
 
-Paste::JS.config.load_path  = ['js_sources']
-Paste::JS.config.destination  = 'destination'
+Paste.config.js_load_path  = ['js_sources']
+Paste.config.js_destination  = 'destination'
 
 RSpec.configure do |c|
   c.color_enabled = true
 
   c.after(:each) do
-    FileUtils.rm_rf Paste::Glue.config.root
+    FileUtils.rm_rf Paste.config.root
   end
 end
 

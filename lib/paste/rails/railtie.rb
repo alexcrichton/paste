@@ -1,18 +1,18 @@
 module Paste
   module Rails
     class Railtie < ::Rails::Railtie
-  
+
       initializer 'paste_initializer' do
         Paste::JS.config.root = ::Rails.root
         ActionView::Base.send :include, Helper
+        Paste::Rails.glue = Paste::JS::Chain.new
 
         if ::Rails.env.development?
-          Paste::Rails.glue = Paste::JS::Chain.new
           config.app_middleware.use Paste::Rails::Updater
         else
-          Paste::Rails.glue = Paste::JS::Unify.new
           config.to_prepare do
             Paste::Rails.glue.render_all_erb
+            Paste::Rails.glue.rebuild
           end
         end
 

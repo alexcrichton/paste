@@ -1,9 +1,9 @@
 require 'spec_helper'
 
-describe Paste::JS::Chain, 'compression' do
+describe Paste::Glue, 'compression' do
   before :each do
-    Paste::JS::Test.write 'foo', "function foo() {};\n foo()"
-    Paste::JS::Test.write 'bar', "function bar() {};\n bar()"
+    Paste::Test.write 'foo', "function foo() {};\n foo()"
+    Paste::Test.write 'bar', "function bar() {};\n bar()"
   end
 
   it "should not compress the files when pasting" do

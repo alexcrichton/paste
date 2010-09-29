@@ -10,24 +10,24 @@ describe Paste::Glue, 'configuration' do
     subject.config.root = '/foo/bar'
     subject.resolve('nonexistent').should == '/foo/bar/nonexistent'
   end
-  
+
   it "should allow relative paths to the root to be set for configuration" do
-    subject.config.root        = '/foo/bar'
-    subject.config.tmp_path    = 'tmp'
-    subject.config.erb_path    = 'erb'
-    subject.config.destination = 'dst'
-    
+    subject.config.root           = '/foo/bar'
+    subject.config.tmp_path       = 'tmp'
+    subject.config.erb_path       = 'erb'
+    subject.config.js_destination = 'dst'
+
     subject.tmp_path.should == '/foo/bar/tmp'
     subject.erb_path.should == '/foo/bar/erb'
     subject.destination.should == '/foo/bar/dst'
   end
-  
+
   it "should allow absolute paths to the root to be set for configuration" do
-    subject.config.root        = '/foo/bar'
-    subject.config.tmp_path    = '/tmp'
-    subject.config.erb_path    = '/erb'
-    subject.config.destination = '/dst'
-    
+    subject.config.root           = '/foo/bar'
+    subject.config.tmp_path       = '/tmp'
+    subject.config.erb_path       = '/erb'
+    subject.config.js_destination = '/dst'
+
     subject.tmp_path.should == '/tmp'
     subject.erb_path.should == '/erb'
     subject.destination.should == '/dst'

@@ -1,10 +1,10 @@
 require 'spec_helper'
 
-describe Paste::JS::Chain do
+describe Paste::Glue do
   before :each do
-    Paste::JS::Test.write 'foo', 'foo()'
-    Paste::JS::Test.write 'bar', 'bar()'
-    Paste::JS::Test.write 'foo/baz', 'baz()'
+    Paste::Test.write 'foo', 'foo()'
+    Paste::Test.write 'bar', 'bar()'
+    Paste::Test.write 'foo/baz', 'baz()'
   end
 
   it "should return the sources given" do
@@ -22,16 +22,16 @@ describe Paste::JS::Chain do
   end
 
   it "should return the sources with dependencies satisfied" do
-    Paste::JS::Test.write 'foo', "//= require <foo/bar>\n//= require <bar>"
-    Paste::JS::Test.write 'bar', '//= require <foo/bar>'
-    Paste::JS::Test.write 'foo/bar', 'foobar()'
+    Paste::Test.write 'foo', "//= require <foo/bar>\n//= require <bar>"
+    Paste::Test.write 'bar', '//= require <foo/bar>'
+    Paste::Test.write 'foo/bar', 'foobar()'
 
     subject.paste('foo', 'bar', 'foo/bar')[:javascripts].should == ['foo/bar.js', 'bar.js', 'foo.js']
   end
 
   it "should raise an exception on circular dependencies" do
-    Paste::JS::Test.write 'foo', '//= require <bar>'
-    Paste::JS::Test.write 'bar', '//= require <foo>'
+    Paste::Test.write 'foo', '//= require <bar>'
+    Paste::Test.write 'bar', '//= require <foo>'
 
     lambda {
       subject.paste('foo', 'bar')
@@ -42,8 +42,8 @@ describe Paste::JS::Chain do
     it "should only regenerate modified files" do
       subject.paste('foo', 'bar', 'foo/baz')
 
-      Paste::JS::Test.write 'foo', 'foo(foo)', Time.now - 42
-      Paste::JS::Test.write 'bar', 'bar(bar)', Time.now + 42
+      Paste::Test.write 'foo', 'foo(foo)', Time.now - 42
+      Paste::Test.write 'bar', 'bar(bar)', Time.now + 42
 
       subject.paste('foo', 'bar', 'foo/baz')
 
@@ -57,8 +57,8 @@ describe Paste::JS::Chain do
 
       subject.paste('foo')
       subject.paste('bar')
-      Paste::JS::Test.write 'foo', 'foobar()', Time.now - 42
-      Paste::JS::Test.write 'bar', 'barbar()', Time.now + 42
+      Paste::Test.write 'foo', 'foobar()', Time.now - 42
+      Paste::Test.write 'bar', 'barbar()', Time.now + 42
 
       subject.rebuild
 
@@ -67,45 +67,45 @@ describe Paste::JS::Chain do
     end
 
     it "should watch for changes in dependencies as well" do
-      Paste::JS::Test.write 'foo', '//= require <bar>'
-      Paste::JS::Test.write 'bar', ''
-      Paste::JS::Test.write 'baz', ''
+      Paste::Test.write 'foo', '//= require <bar>'
+      Paste::Test.write 'bar', ''
+      Paste::Test.write 'baz', ''
       subject.paste('foo')
 
-      Paste::JS::Test.write 'bar', '//= require <baz>', Time.now + 42
+      Paste::Test.write 'bar', '//= require <baz>', Time.now + 42
 
       subject.paste('foo')[:javascripts].should == ['baz.js', 'bar.js', 'foo.js']
     end
 
     it "should watch for changes in dependencies as well" do
-      Paste::JS::Test.write 'foo', '//= require <bar>'
-      Paste::JS::Test.write 'bar', ''
-      Paste::JS::Test.write 'baz', ''
+      Paste::Test.write 'foo', '//= require <bar>'
+      Paste::Test.write 'bar', ''
+      Paste::Test.write 'baz', ''
       subject.paste('foo')
 
-      Paste::JS::Test.write 'bar', '//= require <baz>', Time.now + 42
+      Paste::Test.write 'bar', '//= require <baz>', Time.now + 42
 
       subject.paste('foo')[:javascripts].should == ['baz.js', 'bar.js', 'foo.js']
     end
 
     it "should watch for changes in very deep dependencies" do
-      Paste::JS::Test.write 'foo', ''
-      Paste::JS::Test.write 'bar', ''
+      Paste::Test.write 'foo', ''
+      Paste::Test.write 'bar', ''
       subject.paste('foo')
 
-      Paste::JS::Test.write 'foo', '//= require <bar>', Time.now + 42
+      Paste::Test.write 'foo', '//= require <bar>', Time.now + 42
 
       subject.paste('foo')[:javascripts].should == ['bar.js', 'foo.js']
     end
 
     it "should update dependencies when they've been rewritten using rebuild" do
-      Paste::JS::Test.write 'foo', ''
-      Paste::JS::Test.write 'baz', 'foobar'
+      Paste::Test.write 'foo', ''
+      Paste::Test.write 'baz', 'foobar'
 
       subject.paste('foo')
-      Paste::JS::Test.write 'foo', '//= require <baz>', Time.now + 42
+      Paste::Test.write 'foo', '//= require <baz>', Time.now + 42
       subject.rebuild
-      Paste::JS::Test.touch 'foo', Time.now - 1
+      Paste::Test.touch 'foo', Time.now - 1
 
       @result = subject.paste('foo')[:javascripts].should == ['baz.js', 'foo.js']
     end
@@ -113,8 +113,8 @@ describe Paste::JS::Chain do
 
   describe "implicit dependencies" do
     before :each do
-      Paste::JS::Test.write 'foo', ''
-      Paste::JS::Test.write 'bar', '//= require <foo>'
+      Paste::Test.write 'foo', ''
+      Paste::Test.write 'bar', '//= require <foo>'
     end
 
     it "should be included when pasting" do
@@ -124,7 +124,7 @@ describe Paste::JS::Chain do
     it "should be regenerated" do
       result = subject.paste('bar')[:javascripts].first
 
-      Paste::JS::Test.write 'foo', 'foobar()', Time.now + 42
+      Paste::Test.write 'foo', 'foobar()', Time.now + 42
 
       subject.paste('bar')
       subject.should have_in_result(result, 'foobar()')

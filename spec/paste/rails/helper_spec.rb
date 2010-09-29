@@ -7,6 +7,10 @@ describe Paste::Rails::Helper do
     @helper.class.send :include, subject
   end
 
+  after :each do
+    Paste.config.no_cache = false
+  end
+
   describe "working with javascript" do
     it "should register the include_javascript method" do
       @helper.include_javascript 'foobar'
@@ -53,6 +57,14 @@ describe Paste::Rails::Helper do
 
       @helper.javascript_tags('foo').should == 'foo.js'
     end
+
+    it "doesn't cache javascripts when asked to not do so" do
+      Paste::Test.write 'bar', 'test'
+      Paste.config.no_cache = true
+      @helper.should_receive(:javascript_include_tag).with('bar.js')
+
+      @helper.javascript_tags('bar')
+    end
   end
 
   describe "working with css" do
@@ -79,7 +91,7 @@ describe Paste::Rails::Helper do
       @helper.include_stylesheets 'foo', 'bar'
       @helper.should_receive(:stylesheet_link_tag).with(
           'foo', 'bar', instance_of(Hash)).and_return 'foo.css'
-      Paste::Rails.stub(:glue).and_return(Paste::JS::Chain.new)
+      Paste::Rails.stub(:glue).and_return(Paste::Glue.new)
 
       @helper.stylesheet_tags.should == 'foo.css'
     end
@@ -87,28 +99,35 @@ describe Paste::Rails::Helper do
     it "should return the stylesheet link tags for what is specified" do
       @helper.should_receive(:stylesheet_link_tag).with(
           'foo', 'bar', instance_of(Hash)).and_return 'foo.css'
-      Paste::Rails.stub(:glue).and_return(Paste::JS::Chain.new)
+      Paste::Rails.stub(:glue).and_return(Paste::Glue.new)
 
       @helper.stylesheet_tags('foo', 'bar').should == 'foo.css'
     end
 
     it "should include css required by the javascript" do
-      Paste::JS::Test.write 'foo.js', '//= require_css <bar>'
+      Paste::Test.write 'foo.js', '//= require_css <bar>'
       @helper.include_javascript 'foo'
       @helper.should_receive(:stylesheet_link_tag).with(
           'bar', instance_of(Hash)).and_return 'bar.css'
 
       @helper.stylesheet_tags.should == 'bar.css'
     end
+
+    it "doesn't cache stylesheets when asked to not do so" do
+      Paste.config.no_cache = true
+      @helper.should_receive(:stylesheet_link_tag).with('bar')
+
+      @helper.stylesheet_tags('bar')
+    end
   end
 
   describe "the default glue value" do
     it "should be a unifier by default" do
-      Paste::Rails.glue.should be_a(Paste::JS::Unify)
+      Paste::Rails.glue.should be_a(Paste::Glue)
     end
 
     it "should be swappable" do
-      @chain            = Paste::JS::Chain
+      @chain            = Paste::Glue
       Paste::Rails.glue = @chain
 
       Paste::Rails.glue.should == @chain

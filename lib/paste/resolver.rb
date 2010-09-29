@@ -13,20 +13,21 @@ module Paste
     end
 
     [:destination, :root, :erb_path, :tmp_path].each do |attribute|
+      config_attribute = attribute == :destination ? :js_destination : attribute
       self.class_eval <<-RUBY, __FILE__, __LINE__ + 1
         def #{attribute} relative = ''
           if relative.blank?
-            resolve config.#{attribute}
+            resolve config.#{config_attribute}
           else
-            File.join resolve(config.#{attribute}), relative
+            File.join resolve(config.#{config_attribute}), relative
           end
         end
       RUBY
     end
 
     def load_path
-      config.load_path.map { |p| resolve p }
-    end 
+      config.js_load_path.map { |p| resolve p }
+    end
 
     def find source
       source += '.js' unless source.end_with?('.js') || source.end_with?('.erb')

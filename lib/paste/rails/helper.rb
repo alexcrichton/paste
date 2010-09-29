@@ -10,7 +10,7 @@ module Paste
         all_js = results[:javascripts]
 
         cache = Digest::SHA1.hexdigest(all_js.sort.join)[0..12]
-        all_js << {:cache => cache} unless Paste::JS.config.no_cache
+        all_js << {:cache => cache} unless Paste.config.no_cache
 
         javascript_include_tag *all_js
       end
@@ -22,7 +22,7 @@ module Paste
         all_css = (results[:stylesheets] + @css).uniq
 
         cache = Digest::SHA1.hexdigest(all_css.sort.join)[0..12]
-        all_css << {:cache => cache} unless Paste::CSS.config.no_cache
+        all_css << {:cache => cache} unless Paste.config.no_cache
 
         stylesheet_link_tag *all_css
       end
