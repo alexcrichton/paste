@@ -13,14 +13,14 @@ Put all of your javascript files in <tt>app/javascripts</tt>. You can even make 
 
 Now in your views, whenever you need javascript, just call
   <% javascript 'some/javascript/file' %>
-  <% css 'some/css/file' %>
-or	
+  <% stylesheet 'some/css/file' %>
+or
   <% javascript 'foo/bar', 'foo', 'baz' %>
-		
+
 And then in your layout file,
 
-  <%= paste_js_tags %>
-  <%= paste_css_tags %>
+  <%= javascript_tags %>
+  <%= stylesheet_tags %>
 
 And that's it!
 
@@ -28,15 +28,7 @@ I would recommend you add <tt>public/javascripts/*</tt> to the ignore list of yo
 
 == Behaviour
 
-Paste uses +stylesheet_link_tag+ with a <tt>:cache</tt> option set to a hash of the included CSS files. Normally this means that in production all CSS is concatenated into one file.
-
-=== Production
-For a Rails app, in production, <tt>Paste::JS::Unify</tt> is used to concatenate javascript. This means that +paste_js_tags+ will output only one tag. This tag will have the concatenation of all javascript required, including all of the dependencies (in the correct order).
-
-This is not compressed originally because it's generated on the fly. A cache file is written, however, so on a re-deploy you can rebuild all of the previously generated concatenations and Google's closure compiler is used for compression.
-
-=== Development
-For a Rails app in development, <tt>Paste::JS::Chain</tt> is used to paste javascripts together. This paster simply takes the list of javascripts and determines the dependencies and then generates a separate tag for each javascript file. This proves useful for debugging.
+Paste uses +stylesheet_link_tag+ and +javascript_include_tag+ with a <tt>:cache</tt> option set to a hash of the included files. Normally this means that in production all files are concatenated together.
 
 == Example
 
@@ -46,7 +38,7 @@ Assume that <tt>app/javascripts/jquery.js</tt> exists and we have these files:
 
   //= require <jquery>
   //= require <foo/bar>
-		
+
   $(function() {
     $('#foo').fadeIn().html($['BAR_VALUE']);
   });
@@ -58,10 +50,10 @@ Assume that <tt>app/javascripts/jquery.js</tt> exists and we have these files:
   $['BAR_VALUE'] = <%= Bar::BAR_VALUE %>;
 
 ==== app/views/foo/index.html.erb
-		
+
   <% javascript 'foo' %>
-  <% css 'foo' %>
-		
+  <% stylesheet 'foo' %>
+
   <div id='bar'>
     And the bar value for today is: <div id='foo'></div>
   </div>
@@ -71,31 +63,23 @@ For this example, whenever +foo/index.html.erb+ is rendered, the stylesheet +pub
 == Configuration
 
 The following are recognized options:
-  
+
   # These options are read by both Paste::JS and Paste::CSS
-  Paste::Glue.configure do |config|
+  Paste.configure do |config|
     config.root     # the root directory (defaults to Rails.root or the pwd)
 
     config.tmp_path # a temporary directory to use. Can be relative to the root
                     # or it can be an absolute path. Default: 'tmp/paste-cache'
-  end
 
-  Paste::JS.configure do |config|
-    config.destination # relative or absolute path of where to put javascripts.
-                       # Default: 'public/javascripts'
-    
-    config.load_path   # The load path for javascripts. This is where to find
-                       # the source files. Default: ['app/javascripts']
-    
+    config.js_destination # relative or absolute path of where to put
+                          # javascripts. Default: 'public/javascripts'
+
+    config.js_load_path   # The load path for javascripts. This is where to find
+                          # the source files. Default: ['app/javascripts']
+
     config.erb_path    # relative or absolute path of where to generate the
                        # ERB results to. Default: 'tmp/paste-cache/erb'
-    
-    config.cache_file  # The cache file for when pastes are made. This allows
-                       # the same pastes to be persisted through deployments
-                       # without regenerating on the first request. This is
-                       # a location relative to config.tmp_path
-                       # Default: sprockets.yml
-    
+
     config.parser      # The parser class to use when determining dependencies
                        # of javascripts. Default: Paste::Parser::Sprockets
   end
