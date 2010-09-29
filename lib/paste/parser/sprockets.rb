@@ -4,37 +4,54 @@ module Paste
   module Parser
     class Sprockets
 
-      attr_reader :glue, :secretary, :source
-
-      delegate :concatenation, :to => :secretary
+      attr_reader :glue, :source
 
       def initialize glue, source
-        @glue      = glue
-        @source    = source
-        reset!
+        @glue   = glue
+        @source = source
+        @file   = glue.find source
+        reset_if_needed
       end
 
       def js_dependencies
-        generate_dependencies if @js_dependencies.nil?
+        reset_if_needed
         @js_dependencies
       end
 
       def css_dependencies
-        generate_dependencies if @css_dependencies.nil?
+        reset_if_needed
         @css_dependencies
       end
 
-      def reset!
-        @js_dependencies = @css_dependencies = nil
+      def copy_if_needed
+        dest = glue.destination(source)
 
-        @secretary = ::Sprockets::Secretary.new(
-          :root         => glue.root,
-          :expand_paths => false,
-          :load_path    => glue.load_path,
-          :source_files => [glue.find(source)]
-        )
-      rescue ::Sprockets::LoadError => e
-        raise ResolveError.new(e.message)
+        if !File.exists?(dest) || File.mtime(dest) != File.mtime(@file)
+          FileUtils.mkdir_p File.dirname(dest)
+          FileUtils.cp @file, dest
+          File.utime File.mtime(@file), File.mtime(@file), dest
+        end
+      end
+
+      def reset_if_needed
+        if @js_dependencies.nil? || @css_dependencies.nil? ||
+            @last_updated.nil? || @last_updated < File.mtime(@file)
+
+          begin
+            @last_updated    = Time.now
+
+            @secretary = ::Sprockets::Secretary.new(
+              :root         => glue.root,
+              :expand_paths => false,
+              :load_path    => glue.load_path,
+              :source_files => [@file]
+            )
+
+            generate_dependencies
+          rescue ::Sprockets::LoadError => e
+            raise ResolveError.new(e.message)
+          end
+        end
       end
 
       protected
@@ -47,28 +64,17 @@ module Paste
       def generate_dependencies
         @js_dependencies  = []
         @css_dependencies = []
-        in_order_traversal source
-      end
-
-      def in_order_traversal source, current_path = []
-        return if @js_dependencies.include? source
-        raise "Circular dependency at #{source}" if current_path.include? source
-
-        current_path.push source
 
         source_file = ::Sprockets::SourceFile.new environment,
-            ::Sprockets::Pathname.new(environment, glue.find(source))
-        css_deps = []
+            ::Sprockets::Pathname.new(environment, @file)
+
         source_file.source_lines.each do |line|
           if line.require?
-            in_order_traversal line.require[/^.(.*).$/, 1], current_path
+            @js_dependencies << line.require[/^.(.*).$/, 1]
           elsif line.css_require?
-            css_deps << line.css_require
+            @css_dependencies << line.css_require
           end
         end
-
-        @js_dependencies.push current_path.pop
-        @css_dependencies = @css_dependencies | css_deps
       end
 
     end
