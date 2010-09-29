@@ -3,16 +3,13 @@ require 'digest/sha1'
 module Paste
   module Rails
     module Helper
+
       def javascript_tags *javascripts
         include_javascripts *javascripts
 
         results = Paste::Rails.glue.paste *@javascripts
-        all_js = results[:javascripts]
 
-        cache = Digest::SHA1.hexdigest(all_js.sort.join)[0..12]
-        all_js << {:cache => cache} unless Paste.config.no_cache
-
-        javascript_include_tag *all_js
+        javascript_include_tag *add_cache_argument(results[:javascripts])
       end
 
       def stylesheet_tags *other_css
@@ -21,10 +18,7 @@ module Paste
         results = Paste::Rails.glue.paste *(@javascripts ||= [])
         all_css = (results[:stylesheets] + @css).uniq
 
-        cache = Digest::SHA1.hexdigest(all_css.sort.join)[0..12]
-        all_css << {:cache => cache} unless Paste.config.no_cache
-
-        stylesheet_link_tag *all_css
+        stylesheet_link_tag *add_cache_argument(all_css)
       end
 
       def include_javascripts *javascripts
@@ -49,9 +43,23 @@ module Paste
 
       alias :include_javascript :include_javascripts
       alias :javascript :include_javascripts
+      alias :javascripts :include_javascripts
 
       alias :stylesheet :include_stylesheets
+      alias :stylesheets :include_stylesheets
       alias :include_stylesheet :include_stylesheets
+
+      protected
+
+      def add_cache_argument sources
+        if Paste.config.no_cache
+          sources
+        else
+          cache = Digest::SHA1.hexdigest(sources.sort.join)[0..12]
+          sources + [{:cache => cache}]
+        end
+      end
+
     end
   end
 end
