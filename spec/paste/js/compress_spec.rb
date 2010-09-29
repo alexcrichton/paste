@@ -1,46 +1,50 @@
 require 'spec_helper'
 
-describe Paste::JS::Unify, 'compression' do
+describe Paste::JS::Chain, 'compression' do
   before :each do
     Paste::JS::Test.write 'foo', "function foo() {};\n foo()"
     Paste::JS::Test.write 'bar', "function bar() {};\n bar()"
   end
 
   it "should not compress the files when pasting" do
-    result = subject.paste('foo')[:javascripts].first
+    subject.paste('foo')
 
-    subject.should have_in_result(result, "function foo() {};\n foo()")
-  end
-
-  it "should compress the previously generated result" do
-    result = subject.paste('foo', 'bar')[:javascripts].first
-
-    subject.rebuild! :compress => 'google'
-
-    contents = File.read subject.destination(result)
-    contents.should_not contain("\n")
-    contents.should =~ /function/
+    subject.should have_in_result('foo', "function foo() {};\n foo()")
   end
 
   it "should allow the compilation level to be specified" do
-    result = subject.paste('foo', 'bar')[:javascripts].first
+    results = subject.paste('foo', 'bar')[:javascripts]
 
     subject.rebuild! :compress => 'google',
                      :compilation_level => 'ADVANCED_OPTIMIZATIONS'
 
     # Everything should be optimized out
-    subject.should have_in_result(result, '')
+    results.each do |result|
+      subject.should have_in_result(result, '')
+    end
   end
 
-  it "should compress even when java cannot be found (using the web api)" do
-    result = subject.paste('foo', 'bar')[:javascripts].first
-    subject.stub(:has_java?).and_return false
+  shared_examples_for 'a regular compressor' do
+    it "should compress the previously generated result" do
+      results = subject.paste('foo', 'bar')[:javascripts]
 
-    subject.rebuild! :compress => 'google'
+      subject.rebuild! :compress => 'google'
 
-    contents = File.read subject.destination(result)
-    contents.should_not contain("\n")
-    contents.should =~ /function/
+      results.each do |result|
+        contents = File.read subject.destination(result)
+        contents.should_not contain("\n")
+        contents.should =~ /function/
+      end
+    end
   end
 
+  it_should_behave_like 'a regular compressor'
+
+  describe "without java" do
+    before :each do
+      subject.stub(:has_java?).and_return false
+    end
+
+    it_should_behave_like 'a regular compressor'
+  end
 end
