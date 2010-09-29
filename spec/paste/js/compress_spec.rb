@@ -7,13 +7,13 @@ describe Paste::JS::Unify, 'compression' do
   end
 
   it "should not compress the files when pasting" do
-    result = subject.paste('foo')[:javascript].first
+    result = subject.paste('foo')[:javascripts].first
 
     subject.should have_in_result(result, "function foo() {};\n foo()")
   end
 
   it "should compress the previously generated result" do
-    result = subject.paste('foo', 'bar')[:javascript].first
+    result = subject.paste('foo', 'bar')[:javascripts].first
 
     subject.rebuild! :compress => 'google'
 
@@ -23,7 +23,7 @@ describe Paste::JS::Unify, 'compression' do
   end
 
   it "should allow the compilation level to be specified" do
-    result = subject.paste('foo', 'bar')[:javascript].first
+    result = subject.paste('foo', 'bar')[:javascripts].first
 
     subject.rebuild! :compress => 'google',
                      :compilation_level => 'ADVANCED_OPTIMIZATIONS'
@@ -33,7 +33,7 @@ describe Paste::JS::Unify, 'compression' do
   end
 
   it "should compress even when java cannot be found (using the web api)" do
-    result = subject.paste('foo', 'bar')[:javascript].first
+    result = subject.paste('foo', 'bar')[:javascripts].first
     subject.stub(:has_java?).and_return false
 
     subject.rebuild! :compress => 'google'

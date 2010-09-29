@@ -10,7 +10,7 @@ module Paste
           name = result_name [source]
           if registered? [source]
             if needs_update?(name) || needs_dependency_update?(name)
-              results[name][:parser].reset! 
+              results[name][:parser].reset!
             end
           else
             register [source]
@@ -31,9 +31,9 @@ module Paste
           result
         end
 
-        { 
-          :javascript => js_dependencies,
-          :css        => css_dependencies
+        {
+          :javascripts => js_dependencies,
+          :stylesheets => css_dependencies
         }
       end
 

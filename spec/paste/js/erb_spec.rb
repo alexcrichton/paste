@@ -5,21 +5,21 @@ describe Paste::JS::Base do
   it "should render an erb file into a temporary location" do
     Paste::JS::Test.write 'foo.js.erb', ''
     subject.render_all_erb
-  
+
     subject.erb_path('foo.js').should exist
   end
-  
+
   it "should execute the ERB in the file" do
     Paste::JS::Test.write 'foo.js.erb', '<%= "foo" %><%= "bar" %>'
     subject.render_all_erb
-  
+
     subject.erb_path('foo.js').should have_contents('foobar')
   end
 
   it "should handle deeply nested erb files alright" do
     Paste::JS::Test.write 'foo/bar/baz.js.erb', '<%= "foo" %><%= "bar" %>'
     subject.render_all_erb
-  
+
     subject.erb_path('foo/bar/baz.js').should have_contents('foobar')
   end
 
@@ -33,7 +33,7 @@ describe Paste::JS::Base do
   it "should render when being rebuilt" do
     Paste::JS::Test.write 'foo.js.erb', 'foobar'
     subject.rebuild!
-  
+
     subject.erb_path('foo.js').should have_contents('foobar')
   end
 
@@ -46,10 +46,10 @@ describe Paste::JS::Base do
 
         subject.paste('bar')
       end
-      
+
       it "should watch for a file to be changed to an ERB file" do
         Paste::JS::Test.write 'foo', 'foo'
-        result = subject.paste('foo')[:javascript]
+        result = subject.paste('foo')[:javascripts]
         result.each{ |p| Paste::JS::Test.delete p }
         Paste::JS::Test.delete_source 'foo'
 
@@ -73,24 +73,24 @@ describe Paste::JS::Base do
     before :each do
       Paste::JS::Test.write subject.erb_path('foo.js'), 'foo'
     end
-    
+
     it "should regenerate the file if the source was modified" do
       # File is modified after the original one
       Paste::JS::Test.write 'foo.js.erb', 'foobar', Time.now + 42
-  
+
       subject.render_all_erb
-      
+
       subject.erb_path('foo.js').should have_contents('foobar')
     end
-    
+
     it "should not regenerate the file if the source was not modified" do
       Paste::JS::Test.write 'foo.js.erb', 'foobar', Time.now - 42
       subject.render_all_erb
-      
+
       subject.erb_path('foo.js').should have_contents('foo')
     end
   end
-  
+
   context "rails" do
     before :each do
       Rails = {:foo => 'bar'}
@@ -99,7 +99,7 @@ describe Paste::JS::Base do
     it "should allow templates to use Rails instead of ::Rails" do
       Paste::JS::Test.write 'foo.js.erb', '<%= Rails[:foo] %>'
       subject.render_all_erb
-      
+
       subject.erb_path('foo.js').should have_contents('bar')
     end
   end

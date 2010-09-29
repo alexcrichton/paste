@@ -6,8 +6,8 @@ describe Paste::JS::Unify, 'building cached concatenations' do
     Paste::JS::Test.write 'foo', 'foo()'
     Paste::JS::Test.write 'bar', 'bar()'
     Paste::JS::Test.write 'foo/baz', 'baz()'
-    
-    @result = subject.paste('foo', 'bar', 'foo/baz')[:javascript].first
+
+    @result = subject.paste('foo', 'bar', 'foo/baz')[:javascripts].first
     Paste::JS::Test.delete @result
   end
 

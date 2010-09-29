@@ -5,16 +5,16 @@ shared_examples_for 'a css provider' do
     Paste::JS::Test.write 'foo', '//= require_css <foo>'
     Paste::CSS::Test.write 'foo', ''
   end
-  
+
   it "should require the css" do
     result = subject.paste 'foo'
-    result[:css].should == ['foo']
+    result[:stylesheets].should == ['foo']
   end
-  
+
   it "should not require multiple css twice" do
     Paste::JS::Test.write 'bar', '//= require_css <foo>'
 
-    subject.paste('foo', 'bar')[:css].should == ['foo']
+    subject.paste('foo', 'bar')[:stylesheets].should == ['foo']
   end
 end
 
