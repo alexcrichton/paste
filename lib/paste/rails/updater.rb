@@ -7,7 +7,9 @@ module Paste
       end
 
       def call env
+        Paste::Rails.glue.render_all_erb
         Paste::Rails.glue.rebuild
+
         @app.call env
       end
 
