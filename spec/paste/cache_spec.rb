@@ -30,4 +30,12 @@ describe Paste::Glue, 'building cached concatenations' do
     subject.should have_in_result('foo/baz', 'baz2()')
   end
 
+  it "doesn't explode when one of the files is removed after a rebuild" do
+    subject.rebuild
+
+    Paste::Test.delete_source 'foo'
+
+    subject.rebuild
+  end
+
 end

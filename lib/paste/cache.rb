@@ -7,6 +7,8 @@ module Paste
     def rebuild
       find_sources
 
+      @sources.reject!{ |_, parser| !File.exists? parser.file }
+
       @sources.values.each &:copy_if_needed
     end
 

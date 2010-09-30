@@ -4,7 +4,7 @@ module Paste
   module Parser
     class Sprockets
 
-      attr_reader :glue, :source
+      attr_reader :glue, :source, :file
 
       def initialize glue, source
         @glue   = glue
