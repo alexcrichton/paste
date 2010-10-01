@@ -29,11 +29,8 @@ Paste.configure do |config|
 
   config.js_destination = 'public/javascripts'
   config.js_load_path   = ['app/javascripts']
-  config.erb_path    = 'tmp/paste-cache/erb'
-  config.parser      = Paste::Parser::Sprockets
-
-  config.css_destination = 'public/stylesheets'
-  config.css_load_path   = ['app/stylesheets']
+  config.erb_path       = 'tmp/paste-cache/erb'
+  config.parser         = Paste::Parser::Sprockets
 end
 
 require 'paste/rails/railtie' if defined?(Rails)
