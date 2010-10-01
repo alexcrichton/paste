@@ -9,7 +9,6 @@ module Paste
   autoload :Compress,    'paste/compress'
   autoload :ERBRenderer, 'paste/erb_renderer'
   autoload :Glue,        'paste/glue'
-  autoload :NeedsUpdate, 'paste/needs_update'
   autoload :Rails,       'paste/rails'
   autoload :Resolver,    'paste/resolver'
   autoload :VERSION,     'paste/version'
