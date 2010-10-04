@@ -30,6 +30,12 @@ describe Paste::Glue do
     }.should raise_exception(/circular dependency/i)
   end
 
+  it "raises an exception on nonexistent dependencies" do
+    lambda {
+      subject.paste('nonexistent')
+    }.should raise_exception(/nonexistent.*couldn't be found/i)
+  end
+
   describe "regenerating files" do
     it "watches for changes in dependencies" do
       Paste::Test.write 'foo', '//= require <bar>'

@@ -37,20 +37,16 @@ module Paste
         if @js_dependencies.nil? || @css_dependencies.nil? ||
             @last_updated.nil? || @last_updated < File.mtime(@file)
 
-          begin
-            @last_updated    = Time.now
+          @last_updated    = Time.now
 
-            @secretary = ::Sprockets::Secretary.new(
-              :root         => glue.root,
-              :expand_paths => false,
-              :load_path    => glue.load_path,
-              :source_files => [@file]
-            )
+          @secretary = ::Sprockets::Secretary.new(
+            :root         => glue.root,
+            :expand_paths => false,
+            :load_path    => glue.load_path,
+            :source_files => [@file]
+          )
 
-            generate_dependencies
-          rescue ::Sprockets::LoadError => e
-            raise ResolveError.new(e.message)
-          end
+          generate_dependencies
         end
       end
 
