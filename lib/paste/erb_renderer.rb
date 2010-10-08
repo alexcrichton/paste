@@ -5,6 +5,16 @@ module Paste
 
     def render_all_erb
       erb_sources.each { |s| render_erb s }
+
+      Dir[erb_path + '/**/*.js'].each do |erb|
+        erb_rel = erb.gsub erb_path + '/', ''
+
+        begin
+          find(erb_rel + '.erb')
+        rescue ResolveError
+          File.delete erb
+        end
+      end
     end
 
     def render_erb source

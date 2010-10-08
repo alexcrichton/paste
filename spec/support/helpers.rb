@@ -50,7 +50,8 @@ module Paste
       end
 
       def delete_file file
-        file += '.' + extension unless file.end_with?('.' + extension)
+        file += '.' + extension unless file.end_with?('.' + extension) ||
+            file.end_with?('.erb')
 
         File.delete(file)
       end

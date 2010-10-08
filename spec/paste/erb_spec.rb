@@ -71,6 +71,15 @@ describe Paste::Glue do
 
       subject.erb_path('foo.js').should have_contents('foo')
     end
+
+    it "should delete the file if the source was removed" do
+      Paste::Test.write 'foo.js.erb', 'foobar', Time.now - 42
+      subject.render_all_erb
+      Paste::Test.delete_source 'foo.js.erb'
+
+      subject.render_all_erb
+      subject.erb_path('foo.js').should_not have_contents('foo')
+    end
   end
 
   context "rails" do

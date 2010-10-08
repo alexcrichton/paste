@@ -36,6 +36,16 @@ describe Paste::Glue do
     }.should raise_exception(/nonexistent.*couldn't be found/i)
   end
 
+  it "raises a descriptive exception when a dependency is removed" do
+    Paste::Test.write 'nonexistent', ''
+    subject.paste('nonexistent')
+    Paste::Test.delete_source 'nonexistent'
+
+    lambda {
+      subject.paste('nonexistent')
+    }.should raise_exception(/nonexistent.*couldn't be found/i)
+  end
+
   describe "regenerating files" do
     it "watches for changes in dependencies" do
       Paste::Test.write 'foo', '//= require <bar>'
