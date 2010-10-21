@@ -15,18 +15,17 @@ if RUBY_VERSION < '1.9'
 else
   desc 'Run all tests using cover_me'
   task :coverage => :cleanup_coverage_files do
-    require 'cover_me'
+    require 'simplecov'
 
-    CoverMe.config do |c|
-      c.project.root = File.expand_path('..', __FILE__)
+    SimpleCov.start do
+      add_filter '/spec/'
+
+      require 'rspec/core'
+      spec_dir = File.expand_path('../spec', __FILE__)
+      RSpec::Core::Runner.disable_autorun!
+      RSpec::Core::Runner.run [spec_dir], STDERR, STDOUT
     end
 
-    require 'rspec/core'
-    spec_dir = File.expand_path('../spec', __FILE__)
-    RSpec::Core::Runner.disable_autorun!
-    RSpec::Core::Runner.run [spec_dir], STDERR, STDOUT
-
-    CoverMe.complete!
   end
 end
 
