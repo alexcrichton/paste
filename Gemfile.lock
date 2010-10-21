@@ -8,27 +8,35 @@ PATH
 GEM
   remote: http://rubygems.org/
   specs:
-    activesupport (3.0.0)
+    activesupport (3.0.1)
+    configatron (2.6.4)
+      yamler (>= 0.1.0)
+    cover_me (1.0.0.rc2)
+      configatron
+      hashie
     diff-lcs (1.1.2)
+    hashie (0.4.0)
     rake (0.8.7)
     rcov (0.9.9)
-    rspec (2.0.0)
-      rspec-core (= 2.0.0)
-      rspec-expectations (= 2.0.0)
-      rspec-mocks (= 2.0.0)
-    rspec-core (2.0.0)
-    rspec-expectations (2.0.0)
+    rspec (2.0.1)
+      rspec-core (~> 2.0.1)
+      rspec-expectations (~> 2.0.1)
+      rspec-mocks (~> 2.0.1)
+    rspec-core (2.0.1)
+    rspec-expectations (2.0.1)
       diff-lcs (>= 1.1.2)
-    rspec-mocks (2.0.0)
-      rspec-core (= 2.0.0)
-      rspec-expectations (= 2.0.0)
+    rspec-mocks (2.0.1)
+      rspec-core (~> 2.0.1)
+      rspec-expectations (~> 2.0.1)
     sprockets (1.0.2)
+    yamler (0.1.0)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
   activesupport (~> 3.0)
+  cover_me
   paste!
   rake
   rcov
