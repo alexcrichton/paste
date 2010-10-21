@@ -73,18 +73,18 @@ module Paste
         end
       end
 
+      module CSSLine
+        def css_require?
+          !!css_require
+        end
+
+        def css_require
+          @css_require ||= (comment || "")[/^=\s+require_css\s+<(.*?)>\s*$/, 1]
+        end
+      end
+
     end
   end
 end
 
-module Sprockets
-  class SourceLine
-    def css_require?
-      !!css_require
-    end
-
-    def css_require
-      @css_require ||= (comment || "")[/^=\s+require_css\s+<(.*?)>\s*$/, 1]
-    end
-  end
-end
+Sprockets::SourceLine.class_eval{ include Paste::Parser::Sprockets::CSSLine }
