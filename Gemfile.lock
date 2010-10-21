@@ -35,6 +35,6 @@ DEPENDENCIES
   paste!
   rake
   rcov
-  rspec (>= 2.0.0.rc)
+  rspec
   simplecov
   sprockets
