@@ -1,3 +1,5 @@
+require 'active_support/core_ext/module/attr_accessor_with_default'
+
 module Paste
   module Rails
     autoload :Helper,  'paste/rails/helper'

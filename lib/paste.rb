@@ -1,12 +1,7 @@
-require 'active_support/concern'
-require 'active_support/core_ext/object/blank'
-require 'active_support/core_ext/module/aliasing'
-require 'active_support/core_ext/module/attr_accessor_with_default'
 require 'active_support/core_ext/module/delegation'
 
 module Paste
   autoload :Cache,        'paste/cache'
-  autoload :Compress,     'paste/compress'
   autoload :ERBRenderer,  'paste/erb_renderer'
   autoload :Glue,         'paste/glue'
   autoload :Rails,        'paste/rails'

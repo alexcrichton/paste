@@ -1,3 +1,5 @@
+require 'active_support/core_ext/object/blank'
+
 module Paste
 
   class ResolveError < StandardError; end
