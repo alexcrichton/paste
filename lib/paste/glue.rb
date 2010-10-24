@@ -21,10 +21,7 @@ module Paste
         in_order_traversal parser(source), js_dependencies, css_dependencies
       end
 
-      {
-        :javascripts => js_dependencies,
-        :stylesheets => css_dependencies
-      }
+      {:javascripts => js_dependencies, :stylesheets => css_dependencies.uniq}
     end
 
     protected
@@ -47,8 +44,6 @@ module Paste
       parser.css_dependencies.each do |css_dep|
         css_deps.push css_dep
       end
-
-      css_deps.uniq!
     end
 
   end
