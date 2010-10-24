@@ -6,6 +6,8 @@ module Paste
     def render_all_erb
       erb_sources.each { |s| render_erb s }
 
+      # Remove all stale rendered ERB files if we can't find their original
+      # source
       Dir[erb_path + '/**/*.js'].each do |erb|
         erb_rel = erb.gsub erb_path + '/', ''
 
@@ -25,6 +27,8 @@ module Paste
           File.mtime(source) > File.mtime(to_generate)
 
         FileUtils.mkdir_p File.dirname(to_generate)
+        # Generate the contents before we throw open the file so we don't create
+        # empty files if an exception occurs somewhere
         contents = PasteERBHelper.new(File.read(source)).result
         File.open(to_generate, 'w') { |f| f << contents }
       end
