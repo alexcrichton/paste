@@ -4,8 +4,7 @@ module Paste
 
       initializer 'paste_initializer' do
         Paste.config.root = ::Rails.root
-        ActionView::Base.send :include, Helper
-        Paste::Rails.glue = Paste::Glue.new
+        ActionView::Base.class_eval { include Helper }
 
         if ::Rails.env.development?
           config.app_middleware.use Paste::Rails::Updater
