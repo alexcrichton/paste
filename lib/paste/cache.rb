@@ -1,6 +1,3 @@
-require 'active_support/core_ext/module/synchronization'
-require 'yaml'
-
 module Paste
   module Cache
 
