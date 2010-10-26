@@ -5,6 +5,7 @@ describe Paste::Rails::Helper do
   before :each do
     @helper = Object.new
     @helper.class.send :include, subject
+    Paste::Rails.glue = Paste::Glue.new
   end
 
   after :each do
