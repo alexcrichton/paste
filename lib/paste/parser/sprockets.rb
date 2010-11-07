@@ -10,6 +10,7 @@ module Paste
         @glue   = glue
         @source = source
         @file   = glue.find source
+        @js_dependencies = @css_dependencies = nil
       end
 
       def js_dependencies
