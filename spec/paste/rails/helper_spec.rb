@@ -36,10 +36,10 @@ describe Paste::Rails::Helper do
 
     it "should paste the sources when asked for" do
       helper.stub(:javascript_include_tag).and_return ''
-      @glue = mock(Paste::Glue)
-      Paste::Rails.stub(:glue).and_return(@glue)
+      glue = mock(Paste::Glue)
+      Paste::Rails.glue = glue
 
-      @glue.should_receive(:paste).with('foo', 'bar').and_return(
+      glue.should_receive(:paste).with('foo', 'bar').and_return(
         :javascripts => [],
         :stylesheets => []
       )
@@ -130,10 +130,9 @@ describe Paste::Rails::Helper do
     end
 
     it "should be swappable" do
-      @chain            = Paste::Glue
-      Paste::Rails.glue = @chain
+      Paste::Rails.glue = (other = Paste::Glue.new)
 
-      Paste::Rails.glue.should == @chain
+      Paste::Rails.glue.should == other
     end
   end
 end
