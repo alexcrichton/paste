@@ -1,6 +1,8 @@
 require 'active_support/configurable'
 
 module Paste
+  class CircularReferenceError < RuntimeError; end
+
   class Glue
     extend Resolver
 
@@ -30,7 +32,7 @@ module Paste
       return if js_deps.include? parser.source
 
       if current_path.include? parser.source
-        raise "Circular dependency at #{parser.source}"
+        raise CircularReferenceError, "Circular dependency at #{parser.source}"
       end
 
       current_path.push parser.source
