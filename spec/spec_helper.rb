@@ -13,8 +13,6 @@ Paste.config.js_load_path  = ['js_sources']
 Paste.config.js_destination  = 'destination'
 
 RSpec.configure do |c|
-  c.color_enabled = true
-
   c.after(:each) do
     FileUtils.rm_rf Paste.config.root
   end
