@@ -4,10 +4,9 @@ module Paste
   module ERBRenderer
 
     def render_all_erb
-      erb_sources.each { |s| render_erb s }
-
       # Remove all stale rendered ERB files if we can't find their original
-      # source
+      # source to prevent deleting the source file and having the rendered erb
+      # file still available for use
       Dir[erb_path + '/**/*.js'].each do |erb|
         erb_rel = erb.gsub erb_path + '/', ''
 
@@ -17,6 +16,8 @@ module Paste
           File.delete erb
         end
       end
+
+      erb_sources.each{ |s| render_erb s }
     end
 
     def render_erb source
