@@ -12,7 +12,7 @@ end
 
 module Paste
   module Test
-    class << self
+    module Helpers
 
       def write source, contents, last_modified = Time.now
         file = path source
@@ -57,5 +57,7 @@ module Paste
       end
 
     end
+
+    extend Helpers
   end
 end
