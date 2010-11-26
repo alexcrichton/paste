@@ -25,15 +25,15 @@ describe Paste::Glue do
     Paste::Test.write 'foo', '//= require <bar>'
     Paste::Test.write 'bar', '//= require <foo>'
 
-    lambda {
+    expect {
       subject.paste('foo', 'bar')
-    }.should raise_error(Paste::CircularReferenceError, /circular dependency/i)
+    }.to raise_error(Paste::CircularReferenceError, /circular dependency/i)
   end
 
   it "raises an exception on nonexistent dependencies" do
-    lambda {
+    expect {
       subject.paste('nonexistent')
-    }.should raise_error(Paste::ResolveError, /nonexistent.*couldn't be found/i)
+    }.to raise_error(Paste::ResolveError, /nonexistent.*couldn't be found/i)
   end
 
   it "raises a descriptive exception when a dependency is removed" do
@@ -41,9 +41,9 @@ describe Paste::Glue do
     subject.paste('nonexistent')
     Paste::Test.delete_source 'nonexistent'
 
-    lambda {
+    expect {
       subject.paste('nonexistent')
-    }.should raise_error(Paste::ResolveError, /nonexistent.*couldn't be found/i)
+    }.to raise_error(Paste::ResolveError, /nonexistent.*couldn't be found/i)
   end
 
   describe "regenerating files" do
