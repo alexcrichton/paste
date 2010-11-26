@@ -6,11 +6,10 @@ require 'rspec/core'
 require 'paste'
 
 Paste.configure do |config|
-  config.root = File.expand_path('../tmp', __FILE__)
+  config.root           = File.expand_path('../tmp', __FILE__)
+  config.js_load_path   = ['js_sources']
+  config.js_destination = 'destination'
 end
-
-Paste.config.js_load_path  = ['js_sources']
-Paste.config.js_destination  = 'destination'
 
 RSpec.configure do |c|
   c.after(:each) do
