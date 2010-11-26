@@ -14,8 +14,8 @@ module Paste
         javascript_include_tag *add_cache_argument(results[:javascripts])
       end
 
-      def stylesheet_tags *other_css
-        include_stylesheets *other_css
+      def stylesheet_tags *stylesheets
+        include_stylesheets *stylesheets
 
         results = Paste::Rails.glue.paste *(@included_javascripts ||= [])
         all_css = (results[:stylesheets] + @included_stylesheets).uniq
@@ -29,9 +29,9 @@ module Paste
         @included_javascripts.uniq!
       end
 
-      def include_stylesheets *css
+      def include_stylesheets *stylesheets
         @included_stylesheets ||= []
-        @included_stylesheets += css.flatten
+        @included_stylesheets += stylesheets.flatten
         @included_stylesheets.uniq!
       end
 
