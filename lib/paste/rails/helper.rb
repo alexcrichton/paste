@@ -50,7 +50,7 @@ module Paste
           sources
         else
           cache = Digest::SHA1.hexdigest(sources.sort.join)[0..12]
-          sources + [{:cache => cache}]
+          sources << {:cache => cache}
         end
       end
 
