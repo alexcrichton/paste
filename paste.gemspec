@@ -7,11 +7,11 @@ Gem::Specification.new do |s|
   s.version  = Paste::VERSION
   s.platform = Gem::Platform::RUBY
 
-  s.author           = 'Alex Crichton'
-  s.homepage         = 'http://github.com/alexcrichton/paste'
-  s.email            = 'alex@alexcrichton.com'
-  s.description      = 'Asset Management for Rails'
-  s.summary          = 'JS and CSS dependency management'
+  s.author      = 'Alex Crichton'
+  s.homepage    = 'http://github.com/alexcrichton/paste'
+  s.email       = 'alex@alexcrichton.com'
+  s.description = 'Asset Management for Rails'
+  s.summary     = 'JS and CSS dependency management'
 
   s.files            = `git ls-files lib`.split("\n") + ['README.rdoc']
   s.test_files       = `git ls-files spec`.split("\n")
