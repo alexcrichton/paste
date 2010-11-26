@@ -35,7 +35,7 @@ describe Paste::Glue, 'building cached concatenations' do
 
     Paste::Test.delete_source 'foo'
 
-    subject.rebuild
+    expect{ subject.rebuild }.to_not raise_error
   end
 
 end
