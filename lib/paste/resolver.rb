@@ -34,7 +34,7 @@ module Paste
     def find source
       source += '.js' unless source.end_with?('.js') || source.end_with?('.erb')
 
-      path = (load_path + ['']).detect do |root|
+      path = (load_path << '').detect do |root|
         File.exists? File.join(root, source)
       end
 
