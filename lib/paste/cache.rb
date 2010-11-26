@@ -6,7 +6,7 @@ module Paste
 
       @sources.reject!{ |_, parser| !File.exists? parser.file }
 
-      @sources.values.each &:copy_if_needed
+      @sources.values.each{ |v| v.copy_if_needed }
     end
 
     def parser source
