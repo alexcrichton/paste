@@ -1,9 +1,7 @@
-require 'rubygems'
-require 'bundler/setup'
+require 'bundler'
+Bundler.require
 
 require 'fileutils'
-require 'rspec/core'
-require 'paste'
 
 Paste.configure do |config|
   config.root           = File.expand_path('../tmp', __FILE__)
