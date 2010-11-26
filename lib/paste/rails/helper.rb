@@ -4,10 +4,12 @@ module Paste
   module Rails
     module Helper
 
+      attr_accessor :included_javascripts, :included_stylesheets
+
       def javascript_tags *javascripts
         include_javascripts *javascripts
 
-        results = Paste::Rails.glue.paste *@javascripts
+        results = Paste::Rails.glue.paste *@included_javascripts
 
         javascript_include_tag *add_cache_argument(results[:javascripts])
       end
@@ -15,30 +17,22 @@ module Paste
       def stylesheet_tags *other_css
         include_stylesheets *other_css
 
-        results = Paste::Rails.glue.paste *(@javascripts ||= [])
-        all_css = (results[:stylesheets] + @css).uniq
+        results = Paste::Rails.glue.paste *(@included_javascripts ||= [])
+        all_css = (results[:stylesheets] + @included_stylesheets).uniq
 
         stylesheet_link_tag *add_cache_argument(all_css)
       end
 
       def include_javascripts *javascripts
-        @javascripts ||= []
-        @javascripts += javascripts.flatten
-        @javascripts.uniq!
-      end
-
-      def included_javascripts
-        @javascripts
+        @included_javascripts ||= []
+        @included_javascripts += javascripts.flatten
+        @included_javascripts.uniq!
       end
 
       def include_stylesheets *css
-        @css ||= []
-        @css += css.flatten
-        @css.uniq!
-      end
-
-      def included_stylesheets
-        @css
+        @included_stylesheets ||= []
+        @included_stylesheets += css.flatten
+        @included_stylesheets.uniq!
       end
 
       alias :include_javascript :include_javascripts
