@@ -35,7 +35,7 @@ describe Paste::Rails::Helper do
     end
 
     it "should paste the sources when asked for" do
-      helper.stub(:javascript_include_tag).and_return ''
+      helper.stub(:javascript_include_tag)
       glue = mock(Paste::Glue)
       Paste::Rails.glue = glue
 
@@ -71,30 +71,50 @@ describe Paste::Rails::Helper do
   end
 
   describe "working with css" do
-    it "should register the include_css method" do
+    it "registers the stylesheet method" do
       helper.stylesheet 'foobar'
 
-      helper.included_stylesheets.should == ['foobar']
+      helper.included_stylesheets.should == {{} => ['foobar']}
     end
 
-    it "should allow multiple sources to be included at once" do
+    it "allows link attributes to be specified as well" do
+      helper.stylesheet 'foobar', :media => 'all'
+
+      helper.included_stylesheets.should == {{:media => 'all'} => ['foobar']}
+    end
+
+    it "allows multiple sources to be included at once" do
       helper.include_stylesheets 'foo', 'bar'
 
-      helper.included_stylesheets.should == ['foo', 'bar']
+      helper.included_stylesheets.should == {{} => ['foo', 'bar']}
     end
 
-    it "shouldn't allow multiple sources to be in the list" do
+    it "allows multiple sources to be included at once with link attributes" do
+      helper.include_stylesheets 'foo', 'bar', :media => 'print'
+
+      helper.included_stylesheets.should == {{:media => 'print'} =>
+        ['foo', 'bar']}
+    end
+
+    it "doesn't allow dupicate sources to be in the list" do
       helper.include_stylesheets 'foo', 'bar'
       helper.include_stylesheet 'foo'
 
-      helper.included_stylesheets.should == ['foo', 'bar']
+      helper.included_stylesheets.should == {{} => ['foo', 'bar']}
+    end
+
+    it "doesn't allow duplicate sources with the same attributes" do
+      helper.include_stylesheets 'foo', 'bar', :media => 'print'
+      helper.include_stylesheet 'foo', :media => 'print'
+
+      helper.included_stylesheets.should == {{:media => 'print'} =>
+        ['foo', 'bar']}
     end
 
     it "should return the stylesheet link tags for what was included" do
       helper.include_stylesheets 'foo', 'bar'
       helper.should_receive(:stylesheet_link_tag).with(
           'foo', 'bar', instance_of(Hash)).and_return 'foo.css'
-      Paste::Rails.stub(:glue).and_return(Paste::Glue.new)
 
       helper.stylesheet_tags.should == 'foo.css'
     end
@@ -102,7 +122,6 @@ describe Paste::Rails::Helper do
     it "should return the stylesheet link tags for what is specified" do
       helper.should_receive(:stylesheet_link_tag).with(
           'foo', 'bar', instance_of(Hash)).and_return 'foo.css'
-      Paste::Rails.stub(:glue).and_return(Paste::Glue.new)
 
       helper.stylesheet_tags('foo', 'bar').should == 'foo.css'
     end
@@ -116,11 +135,46 @@ describe Paste::Rails::Helper do
       helper.stylesheet_tags.should == 'bar.css'
     end
 
-    it "doesn't cache stylesheets when asked to not do so" do
-      Paste.config.no_cache = true
-      helper.should_receive(:stylesheet_link_tag).with('bar')
+    context "no caching" do
+      before{ Paste.config.no_cache = true }
 
-      helper.stylesheet_tags('bar')
+      it "doesn't give a cache argument" do
+        helper.should_receive(:stylesheet_link_tag).with('bar', {})
+
+        helper.stylesheet_tags('bar')
+      end
+
+      it "passes along stylesheet options" do
+        helper.should_receive(:stylesheet_link_tag).with('bar', :foo => 'bar')
+
+        helper.stylesheet_tags('bar', :foo => 'bar')
+      end
+
+      it "passes along stylesheet options included via #stylesheet" do
+        helper.should_receive(:stylesheet_link_tag).with('bar', :foo => 'bar')
+
+        helper.stylesheet 'bar', :foo => 'bar'
+
+        helper.stylesheet_tags
+      end
+
+      it "keeps separate different option hashes" do
+        helper.should_receive(:stylesheet_link_tag).with('bar', :bar => 'bar')
+        helper.should_receive(:stylesheet_link_tag).with('foo', :foo => 'foo')
+
+        helper.stylesheet 'foo', :foo => 'foo'
+        helper.stylesheet 'bar', :bar => 'bar'
+
+        helper.stylesheet_tags
+      end
+
+      it "by default doesn't add in any options" do
+        helper.should_receive(:stylesheet_link_tag).with('bar', {})
+
+        helper.stylesheet 'bar'
+
+        helper.stylesheet_tags
+      end
     end
   end
 

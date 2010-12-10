@@ -1,4 +1,6 @@
 require 'digest/sha1'
+require 'active_support/core_ext/array/extract_options'
+require 'active_support/core_ext/string/output_safety'
 
 module Paste
   module Rails
@@ -9,18 +11,22 @@ module Paste
       def javascript_tags *javascripts
         include_javascripts *javascripts
 
-        results = Paste::Rails.glue.paste *@included_javascripts
+        results = Paste::Rails.glue.paste(*@included_javascripts)[:javascripts]
 
-        javascript_include_tag *add_cache_argument(results[:javascripts])
+        javascript_include_tag *add_cache_argument(results)
       end
 
       def stylesheet_tags *stylesheets
         include_stylesheets *stylesheets
+        @included_javascripts ||= []
 
-        results = Paste::Rails.glue.paste *(@included_javascripts ||= [])
-        all_css = (results[:stylesheets] + @included_stylesheets).uniq
+        results = Paste::Rails.glue.paste(*@included_javascripts)[:stylesheets]
+        include_stylesheets *results
 
-        stylesheet_link_tag *add_cache_argument(all_css)
+        @included_stylesheets.map do |opts, sheets|
+          next if sheets.size == 0
+          stylesheet_link_tag *add_cache_argument(sheets << opts)
+        end.join.html_safe
       end
 
       def include_javascripts *javascripts
@@ -30,9 +36,10 @@ module Paste
       end
 
       def include_stylesheets *stylesheets
-        @included_stylesheets ||= []
-        @included_stylesheets += stylesheets.flatten
-        @included_stylesheets.uniq!
+        @included_stylesheets ||= Hash.new{ |h, k| h[k] = [] }
+        opts = stylesheets.extract_options! || {}
+        @included_stylesheets[opts] += stylesheets.flatten
+        @included_stylesheets[opts].uniq!
       end
 
       alias :include_javascript :include_javascripts
@@ -49,8 +56,9 @@ module Paste
         if Paste.config.no_cache
           sources
         else
-          cache = Digest::SHA1.hexdigest(sources.sort.join)[0..12]
-          sources << {:cache => cache}
+          opts = sources.extract_options! || {}
+          opts[:cache] = Digest::SHA1.hexdigest(sources.sort.join)[0..12]
+          sources << opts
         end
       end
 
