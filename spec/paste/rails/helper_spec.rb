@@ -111,6 +111,14 @@ describe Paste::Rails::Helper do
         ['foo', 'bar']}
     end
 
+    it "doesn't modify the arrays of included stylesheets" do
+      helper.include_stylesheet 'foo'
+      helper.stub(:stylesheet_link_tag).and_return ''
+      helper.stylesheet_tags
+
+      helper.included_stylesheets.should == {{} => ['foo']}
+    end
+
     it "should return the stylesheet link tags for what was included" do
       helper.include_stylesheets 'foo', 'bar'
       helper.should_receive(:stylesheet_link_tag).with(

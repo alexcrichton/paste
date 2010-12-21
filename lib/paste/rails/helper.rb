@@ -25,7 +25,7 @@ module Paste
 
         @included_stylesheets.map do |opts, sheets|
           next if sheets.size == 0
-          stylesheet_link_tag *add_cache_argument(sheets << opts)
+          stylesheet_link_tag *add_cache_argument(sheets.dup << opts.dup)
         end.join.html_safe
       end
 
