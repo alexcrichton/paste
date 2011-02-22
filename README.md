@@ -25,9 +25,29 @@ And then in your layout file,
     <%= stylesheet_tags %>
     <%= javascript_tags %>
 
-And that's it!
+And that's it! I would recommend you add `public/javascripts/*` to the ignore list of your VCS.
 
-I would recommend you add `public/javascripts/*` to the ignore list of your VCS.
+### Javascript Specifics
+
+Javascripts can require other files so you don't have to explicitly include each file on your page. This is done with a comment at the top of the file of the format:
+
+    //= require <file/to/require>
+
+Where `file/to/require` is a location relative to any path in `Paste.config.js_load_path`.
+
+Sometimes, javascripts can even require some css to be associated with them. To do this, there's a similar directive which is as follows:
+
+    //= require_css <path/to/css>
+
+This will cause `stylesheet_link_tag` to be invoke with the argument `path/to/css` with a call to `stylesheet_tags`
+
+### Stylesheet Specifics
+
+Stylesheets don't normally require other stylesheets, so Paste doesn't do much with that. If you do need that, I'd recommend looking at [compass](http://compass-style.org). More options are normally needed with stylesheets, however, like `:media`. You can supply this via:
+
+    <% stylesheet 'print', :media => 'print' %>
+
+This will invoke `stylesheet_link_tag` a separate time with the options `:media => 'print'`
 
 ## Behaviour
 
