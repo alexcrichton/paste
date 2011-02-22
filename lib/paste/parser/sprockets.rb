@@ -37,7 +37,7 @@ module Paste
         if @js_dependencies.nil? || @css_dependencies.nil? ||
             @last_updated.nil? || @last_updated < File.mtime(@file)
 
-          @last_updated    = Time.now
+          @last_updated = Time.now
 
           @secretary = ::Sprockets::Secretary.new(
             :root         => glue.root,
