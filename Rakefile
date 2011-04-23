@@ -37,3 +37,5 @@ task :clobber => :cleanup_rcov_files do
   rm_rf 'pkg'
   rm_rf 'tmp'
 end
+
+task :default => :spec
