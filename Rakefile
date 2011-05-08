@@ -39,3 +39,4 @@ task :clobber => :cleanup_rcov_files do
 end
 
 task :default => :spec
+task :test => :spec

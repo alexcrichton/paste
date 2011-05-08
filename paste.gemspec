@@ -13,12 +13,12 @@ Gem::Specification.new do |s|
   s.description = 'Asset Management for Rails'
   s.summary     = 'JS and CSS dependency management'
 
-  s.files            = `git ls-files lib`.split("\n")
+  s.files            = `git ls-files`.split("\n")
   s.test_files       = `git ls-files spec`.split("\n")
   s.rdoc_options     = ['--charset=UTF-8']
   s.require_path     = 'lib'
 
-  s.add_dependency 'sprockets'
+  s.add_dependency 'sprockets', '~> 1.0'
   s.add_dependency 'activesupport', '~> 3.0'
 
   s.add_development_dependency 'rake'
